@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Modular Culinary Engine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500&display=swap"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css"/>
+<style>
+/* ── Reset ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+/* ── Design tokens ── */
+:root{
+  --cf:"Cormorant Garamond",serif;
+  --ui:"Inter",sans-serif;
+  --s0:#f0ede8; --s1:#f7f5f2; --s2:#ffffff;
+  --tp:#1a1916; --ts:#5c5a55; --tm:#9c9a96;
+  --bd:rgba(0,0,0,.10); --bds:rgba(0,0,0,.18);
+  --bga:#e6f1fb; --bda:#85b7eb; --ta:#185fa5; --fa:#378add; --oa:#ffffff;
+  --bgr:#fcebeb; --bdr:#f09595; --tr:#a32d2d;
+  --bgs:#eaf3de; --ts2:#3b6d11;
+  --bgw:#faeeda; --tw:#854f0b;
+  --r:8px;
+}
+
+@media(prefers-color-scheme:dark){
+  :root{
+    --s0:#111110; --s1:#1c1c1a; --s2:#252523;
+    --tp:#f0ede8; --ts:#a8a69f; --tm:#62615d;
+    --bd:rgba(255,255,255,.09); --bds:rgba(255,255,255,.16);
+    --bga:#0c2f52; --bda:#185fa5; --ta:#85b7eb; --fa:#185fa5; --oa:#f0ede8;
+    --bgr:#3d1111; --bdr:#791f1f; --tr:#f09595;
+    --bgs:#152808; --ts2:#97c459;
+    --bgw:#2d1e06; --tw:#ef9f27;
+  }
+}
+
+body{font-family:var(--ui);background:var(--s0);color:var(--tp);min-height:100vh;-webkit-font-smoothing:antialiased}
+
+/* ── Shell ── */
+.app-shell{display:flex;flex-direction:column;min-height:100vh}
+.app-header{background:var(--s2);border-bottom:.5px solid var(--bd);position:sticky;top:0;z-index:10}
+.header-inner{max-width:1200px;margin:0 auto;padding:0 1.5rem;display:flex;align-items:center;gap:2rem;height:52px}
+.logo{display:flex;align-items:center;gap:8px;font-family:var(--cf);font-size:18px;font-weight:600;color:var(--tp);flex-shrink:0}
+.logo .ti{font-size:20px;color:var(--ta)}
+.nav{display:flex;gap:2px}
+.ntab{background:none;border:none;padding:6px 14px;font-family:var(--ui);font-size:13px;color:var(--ts);cursor:pointer;border-radius:var(--r);transition:all .15s;display:flex;align-items:center;gap:6px}
+.ntab.active{background:var(--s1);color:var(--tp);font-weight:500}
+.ntab:hover:not(.active){background:var(--s1)}
+.app-main{max-width:1200px;margin:0 auto;padding:1.5rem;width:100%;flex:1}
+
+/* ── Builder ── */
+.cols{display:grid;grid-template-columns:280px 1fr;gap:1.25rem}
+.sidebar{background:var(--s2);border:.5px solid var(--bd);border-radius:12px;padding:.75rem;height:fit-content;position:sticky;top:68px;max-height:calc(100vh - 80px);overflow-y:auto}
+.sb-header{display:flex;align-items:center;justify-content:space-between;padding:0 4px 8px;border-bottom:.5px solid var(--bd);margin-bottom:6px}
+.sb-title{font-family:var(--cf);font-size:16px;font-weight:600;color:var(--tp)}
+.sb-create-btn{background:var(--bga);color:var(--ta);border:1px solid var(--bda);border-radius:4px;padding:3px 8px;font-size:11px;font-family:var(--ui);cursor:pointer;display:flex;align-items:center;gap:4px;font-weight:500;transition:all .12s}
+.sb-create-btn:hover{background:var(--fa);color:var(--oa)}
+
+.role-section{margin-bottom:2px}
+.role-header{display:flex;align-items:center;gap:5px;padding:5px 4px;cursor:pointer;border-radius:5px;transition:background .12s;user-select:none}
+.role-header:hover{background:var(--s1)}
+.role-chevron{font-size:11px;color:var(--tm);transition:transform .15s;flex-shrink:0}
+.role-chevron.open{transform:rotate(90deg)}
+.role-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.role-name{font-size:12px;font-weight:500;color:var(--ts);flex:1}
+.role-count{font-size:10px;color:var(--tm)}
+.role-add{background:none;border:none;cursor:pointer;color:var(--tm);padding:3px;border-radius:4px;display:flex;align-items:center;font-size:15px;transition:all .12s;opacity:0}
+.role-header:hover .role-add{opacity:1}
+.role-add:hover{color:var(--ta);background:var(--bga)}
+.role-body{padding-left:14px}
+.folder{margin-bottom:1px}
+.folder-header{display:flex;align-items:center;gap:5px;padding:4px 4px;cursor:pointer;border-radius:5px;transition:background .12s;user-select:none}
+.folder-header:hover{background:var(--s1)}
+.folder-chevron{font-size:10px;color:var(--tm);transition:transform .15s;flex-shrink:0}
+.folder-chevron.open{transform:rotate(90deg)}
+.folder-icon{font-size:13px;color:var(--tm);flex-shrink:0}
+.folder-icon.open{color:var(--ta)}
+.folder-name{font-size:12px;color:var(--tp);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.folder-actions{display:flex;gap:1px;opacity:0;transition:opacity .12s}
+.folder-header:hover .folder-actions{opacity:1}
+.fa-btn{background:none;border:none;cursor:pointer;color:var(--tm);padding:2px 3px;border-radius:3px;font-size:12px;display:flex;align-items:center;transition:all .12s}
+.fa-btn:hover{color:var(--tr);background:var(--bgr)}
+.fa-btn.add:hover{color:var(--ta);background:var(--bga)}
+.fa-btn.rename:hover{color:var(--ts);background:var(--s1)}
+.folder-body{padding-left:14px}
+.comp-item{display:flex;align-items:center;gap:6px;padding:4px 6px;border-radius:5px;cursor:grab;transition:all .12s;user-select:none}
+.comp-item:hover{background:var(--s1)}
+.comp-item:active{cursor:grabbing;opacity:.7}
+.comp-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.comp-name{font-size:11px;color:var(--tp);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.comp-actions{display:flex;align-items:center;gap:2px;opacity:0;transition:opacity .12s}
+.comp-item:hover .comp-actions{opacity:1}
+.comp-btn{background:none;border:none;cursor:pointer;color:var(--tm);font-size:12px;padding:2px;border-radius:3px;display:flex;align-items:center;transition:all .12s}
+.comp-btn:hover{color:var(--ta);background:var(--bga)}
+.comp-btn.del:hover{color:var(--tr);background:var(--bgr)}
+
+/* ── Canvas ── */
+.builder{display:flex;flex-direction:column;gap:1rem}
+.title-preview{background:var(--s2);border-radius:var(--r);border:.5px solid var(--bda);padding:1rem 1.25rem}
+.title-eyebrow{font-size:10px;color:var(--ta);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+.title-text{font-family:var(--cf);font-size:22px;font-weight:600;color:var(--tp);line-height:1.3;min-height:28px}
+.title-text.empty{color:var(--tm);font-style:italic;font-weight:400;font-size:16px}
+.meta-row{display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap}
+.meta-chip{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:3px 8px;border-radius:4px}
+.meta-chip.time{background:var(--bgw);color:var(--tw)}
+.meta-chip.allergen{background:var(--bgr);color:var(--tr)}
+.meta-chip.diet{background:var(--bgs);color:var(--ts2)}
+.slot-label{font-size:11px;color:var(--ts);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;font-weight:500}
+.slot-hint{color:var(--tm);font-weight:400}
+.slot-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.slot{min-height:60px;border:1px dashed var(--bds);border-radius:var(--r);padding:8px;display:flex;flex-direction:column;gap:4px;transition:all .12s}
+.slot.dragover{border-color:var(--bda);background:var(--bga)}
+.slot-tag{display:flex;align-items:center;gap:5px;background:var(--s1);border:.5px solid var(--bd);border-radius:4px;padding:4px 8px;font-size:11px;color:var(--tp)}
+.slot-tag .rm{background:none;border:none;cursor:pointer;color:var(--tm);font-size:13px;line-height:1;padding:0 0 0 4px;transition:color .12s}
+.slot-tag .rm:hover{color:var(--tr)}
+.slot-empty{font-size:11px;color:var(--tm);display:flex;align-items:center;gap:6px;padding:6px 0}
+.tag-grid{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.tag-pill{font-size:11px;padding:3px 9px;border-radius:20px;border:.5px solid var(--bd);color:var(--ts)}
+.tag-pill.allergen{background:var(--bgr);color:var(--tr);border-color:var(--bdr)}
+.tags-placeholder{font-size:12px;color:var(--tm)}
+.save-row{display:flex;justify-content:flex-end}
+.save-btn{background:var(--fa);color:var(--oa);border:none;border-radius:var(--r);padding:9px 22px;font-size:13px;font-family:var(--ui);font-weight:500;cursor:pointer;transition:opacity .15s}
+.save-btn:hover:not(:disabled){opacity:.88}
+.save-btn:disabled{opacity:.35;cursor:default}
+
+/* ── Registry & Library Cards ── */
+.tab-content{animation:fadein .15s ease}
+@keyframes fadein{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.tab-header{margin-bottom:1rem;display:flex;justify-content:space-between;align-items:center}
+.tab-title{font-family:var(--cf);font-size:22px;font-weight:600}
+
+/* Filter & Search Bar */
+.filter-container{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:1rem}
+.filter-bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.filter-label{font-size:11px;color:var(--tm);text-transform:uppercase;letter-spacing:.05em}
+.filter-pill{background:none;border:.5px solid var(--bd);border-radius:20px;padding:4px 12px;font-size:12px;color:var(--ts);cursor:pointer;font-family:var(--ui);transition:all .15s}
+.filter-pill.on{background:var(--bga);border-color:var(--bda);color:var(--ta)}
+.filter-pill:hover:not(.on){background:var(--s1)}
+
+.search-box{display:flex;align-items:center;gap:6px;background:var(--s2);border:.5px solid var(--bd);border-radius:20px;padding:4px 12px;width:240px;transition:border-color .15s}
+.search-box:focus-within{border-color:var(--bda)}
+.search-box i{font-size:14px;color:var(--tm)}
+.search-input{border:none;background:transparent;outline:none;font-family:var(--ui);font-size:12px;color:var(--tp);width:100%}
+
+.reg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.recipe-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.recipe-card{background:var(--s2);border:.5px solid var(--bd);border-radius:12px;padding:1rem 1.125rem;transition:all .15s;cursor:pointer;display:flex;flex-direction:column;justify-content:space-between}
+.recipe-card:hover{border-color:var(--bda);transform:translateY(-1px)}
+
+/* Registry Add Card */
+.reg-add-card{background:var(--s2);border:1.5px dashed var(--bda);border-radius:12px;padding:1rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;min-height:120px;transition:all .15s}
+.reg-add-card:hover{background:var(--bga);border-color:var(--fa)}
+.reg-add-btn{width:36px;height:36px;border-radius:50%;background:var(--fa);color:var(--oa);display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 2px 6px rgba(0,0,0,.1)}
+.reg-add-text{font-size:12px;font-weight:500;color:var(--ta)}
+
+.rc-cat{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--tm);margin-bottom:4px;display:flex;align-items:center;justify-content:space-between}
+.rc-title{font-family:var(--cf);font-size:16px;font-weight:600;color:var(--tp);margin-bottom:8px;line-height:1.35}
+.rc-tags{display:flex;flex-wrap:wrap;gap:3px}
+.rc-tag{font-size:10px;padding:2px 7px;border-radius:10px;background:var(--s1);color:var(--ts);border:.5px solid var(--bd)}
+.rc-tag.allergen{background:var(--bgr);color:var(--tr);border-color:var(--bdr)}
+.bcg-badge{font-size:10px;padding:2px 7px;border-radius:4px;font-weight:500}
+.bcg-STAR{background:var(--bgw);color:var(--tw)}
+.bcg-PLOWHORSE{background:var(--bgs);color:var(--ts2)}
+.bcg-PUZZLE{background:#ede8fe;color:#4a3db0}
+.bcg-DOG{background:var(--s1);color:var(--tm)}
+.empty-state{display:flex;flex-direction:column;align-items:center;gap:10px;padding:4rem 2rem;color:var(--tm)}
+.empty-state .ti{font-size:32px}
+.empty-state p{font-size:13px}
+
+/* ── Modal Component & Dish Styles ── */
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:1000;opacity:0;pointer-events:none;transition:opacity .15s ease}
+.modal-overlay.open{opacity:1;pointer-events:auto}
+.modal-container{background:var(--s2);border-radius:12px;width:100%;max-width:620px;max-height:85vh;overflow-y:auto;box-shadow:0 12px 32px rgba(0,0,0,.2);display:flex;flex-direction:column}
+.modal-header{padding:1.25rem 1.5rem;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--s2);z-index:2}
+.modal-title{font-family:var(--cf);font-size:20px;font-weight:600}
+.modal-close{background:none;border:none;font-size:18px;color:var(--tm);cursor:pointer;padding:4px;border-radius:4px}
+.modal-close:hover{color:var(--tp);background:var(--s1)}
+.modal-body{padding:1.5rem;display:flex;flex-direction:column;gap:1.2rem}
+.modal-footer{padding:1rem 1.5rem;border-top:1px solid var(--bd);display:flex;justify-content:flex-end;gap:8px;background:var(--s2);position:sticky;bottom:0}
+
+.form-group{display:flex;flex-direction:column;gap:6px}
+.form-label{font-size:11px;font-weight:600;color:var(--ts);text-transform:uppercase;letter-spacing:.05em}
+.form-input,.form-select,.form-textarea{font-family:var(--ui);font-size:13px;padding:8px 10px;border-radius:6px;border:1px solid var(--bd);background:var(--s0);color:var(--tp);outline:none;transition:border-color .12s}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--bda)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* Dynamic Ingredients Table */
+.ing-table{width:100%;border-collapse:collapse;margin-top:4px}
+.ing-table th{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--tm);text-align:left;padding-bottom:6px}
+.ing-table td{padding:3px 2px}
+.ing-table input{width:100%;padding:5px 8px;font-size:12px;border:1px solid var(--bd);border-radius:4px;background:var(--s0);color:var(--tp)}
+.btn-small{padding:5px 10px;font-size:11px;border-radius:4px;border:1px solid var(--bd);background:var(--s1);color:var(--tp);cursor:pointer;display:inline-flex;align-items:center;gap:4px;margin-top:4px;align-self:flex-start}
+.btn-small:hover{background:var(--bga);border-color:var(--bda);color:var(--ta)}
+
+/* Tag Editor inside Modal */
+.tag-editor-box{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:6px;border:1px solid var(--bd);border-radius:6px;background:var(--s0);min-height:42px}
+.tag-editor-chip{font-size:11px;padding:2px 8px;border-radius:12px;background:var(--s2);border:1px solid var(--bd);display:inline-flex;align-items:center;gap:4px}
+.tag-editor-chip .remove{cursor:pointer;color:var(--tm);font-size:12px}
+.tag-editor-chip .remove:hover{color:var(--tr)}
+.tag-input-inline{border:none;background:transparent;outline:none;font-size:12px;color:var(--tp);flex:1;min-width:100px;padding:2px}
+.tag-suggestions{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.tag-sug-pill{font-size:10px;padding:2px 6px;border-radius:4px;background:var(--s1);color:var(--tm);cursor:pointer;border:1px dashed var(--bd)}
+.tag-sug-pill:hover{color:var(--ta);border-color:var(--bda);background:var(--bga)}
+
+/* Dish Detail Specifics */
+.dish-sec{margin-bottom:12px}
+.dish-sec-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--tm);margin-bottom:6px;border-bottom:1px dashed var(--bd);padding-bottom:4px}
+.dish-comp-card{background:var(--s1);border-radius:6px;padding:8px 12px;margin-bottom:6px}
+.dish-comp-head{display:flex;justify-content:space-between;font-size:12px;font-weight:500;margin-bottom:4px}
+.dish-comp-ings{font-size:11px;color:var(--ts);padding-left:12px;list-style-type:disc}
+
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bds);border-radius:10px}
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="logo">
+        <i class="ti ti-chef-hat" aria-hidden="true"></i>
+        Culinary Engine
+      </div>
+      <nav class="nav" id="nav">
+        <button class="ntab active" onclick="switchTab('builder')"><i class="ti ti-adjustments-horizontal" aria-hidden="true"></i> Dish builder</button>
+        <button class="ntab" onclick="switchTab('registry')"><i class="ti ti-database" aria-hidden="true"></i> Component registry</button>
+        <button class="ntab" onclick="switchTab('recipes')"><i class="ti ti-book" aria-hidden="true"></i> Recipe library</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="app-main">
+
+    <!-- BUILDER -->
+    <div id="tab-builder" class="tab-content">
+      <div class="cols">
+        <aside class="sidebar">
+          <div class="sb-header">
+            <span class="sb-title">Components</span>
+            <button class="sb-create-btn" onclick="openComponentModal()"><i class="ti ti-plus"></i> New</button>
+          </div>
+          <div id="sidebar-tree"></div>
+        </aside>
+        <section class="builder">
+          <div class="title-preview">
+            <div class="title-eyebrow">Auto-generated title</div>
+            <div class="title-text empty" id="title-preview">Start adding components below</div>
+            <div class="meta-row" id="meta-row"></div>
+          </div>
+          <div>
+            <div class="slot-label">Base vehicle <span class="slot-hint">(1 max)</span></div>
+            <div class="slot" id="slot-BASE" ondragover="doDragover(event,'BASE')" ondrop="doDrop(event,'BASE')" ondragleave="doLeave(event)">
+              <div class="slot-empty" id="empty-BASE"><i class="ti ti-drag-drop" aria-hidden="true"></i> Drop or click a base</div>
+            </div>
+          </div>
+          <div class="slot-row">
+            <div>
+              <div class="slot-label">Primary flavors <span class="slot-hint">(up to 3)</span></div>
+              <div class="slot" id="slot-PRIMARY" ondragover="doDragover(event,'PRIMARY')" ondrop="doDrop(event,'PRIMARY')" ondragleave="doLeave(event)">
+                <div class="slot-empty" id="empty-PRIMARY"><i class="ti ti-drag-drop" aria-hidden="true"></i> Drop flavors</div>
+              </div>
+            </div>
+            <div>
+              <div class="slot-label">Secondary / aromatic <span class="slot-hint">(up to 3)</span></div>
+              <div class="slot" id="slot-SECONDARY" ondragover="doDragover(event,'SECONDARY')" ondrop="doDrop(event,'SECONDARY')" ondragleave="doLeave(event)">
+                <div class="slot-empty" id="empty-SECONDARY"><i class="ti ti-drag-drop" aria-hidden="true"></i> Drop aromatics</div>
+              </div>
+            </div>
+            <div>
+              <div class="slot-label">Textures <span class="slot-hint">(up to 3)</span></div>
+              <div class="slot" id="slot-TEXTURE" ondragover="doDragover(event,'TEXTURE')" ondrop="doDrop(event,'TEXTURE')" ondragleave="doLeave(event)">
+                <div class="slot-empty" id="empty-TEXTURE"><i class="ti ti-drag-drop" aria-hidden="true"></i> Drop textures</div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="slot-label">Inherited tags</div>
+            <div class="tag-grid" id="inherited-tags"><span class="tags-placeholder">Rolls up automatically from components</span></div>
+          </div>
+          <div class="save-row">
+            <button class="save-btn" id="save-btn" disabled onclick="onSaveRecipe()">Save to library →</button>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- REGISTRY -->
+    <div id="tab-registry" class="tab-content" style="display:none">
+      <div class="tab-header">
+        <h1 class="tab-title">Component registry</h1>
+        <button class="btn-small" onclick="resetToDefaults()"><i class="ti ti-refresh"></i> Reset Data</button>
+      </div>
+      
+      <div class="filter-container">
+        <div class="filter-bar" id="reg-filter-bar"><span class="filter-label">Role:</span></div>
+        <div class="search-box">
+          <i class="ti ti-search"></i>
+          <input type="text" id="reg-search-input" class="search-input" placeholder="Search components or tags..." oninput="onRegistrySearch()"/>
+        </div>
+      </div>
+      
+      <div class="reg-grid" id="reg-grid"></div>
+    </div>
+
+    <!-- RECIPES -->
+    <div id="tab-recipes" class="tab-content" style="display:none">
+      <div class="tab-header"><h1 class="tab-title">Recipe library</h1></div>
+      <div class="recipe-grid" id="recipe-grid"></div>
+      <div class="empty-state" id="recipe-empty" style="display:none">
+        <i class="ti ti-book-off" aria-hidden="true"></i>
+        <p>Build a dish in the builder and save it here.</p>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- COMPONENT MODAL -->
+<div class="modal-overlay" id="comp-modal">
+  <div class="modal-container">
+    <div class="modal-header">
+      <div class="modal-title" id="comp-modal-title">Component Editor</div>
+      <button class="modal-close" onclick="closeModal('comp-modal')"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="modal-comp-id"/>
+      <div class="form-group">
+        <label class="form-label">Component Name</label>
+        <input type="text" id="modal-comp-name" class="form-input" placeholder="e.g. Yuzu Curd"/>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Role</label>
+          <select id="modal-comp-role" class="form-select" onchange="populateFolderOptions()">
+            <option value="BASE">Base vehicles</option>
+            <option value="PRIMARY">Primary flavors</option>
+            <option value="SECONDARY">Secondary / aromatic</option>
+            <option value="TEXTURE">Textures</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Folder</label>
+          <select id="modal-comp-folder" class="form-select"></select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Active Time (mins)</label>
+          <input type="number" id="modal-comp-time" class="form-input" min="0" value="0"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Passive Time (mins)</label>
+          <input type="number" id="modal-comp-passive" class="form-input" min="0" value="0"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Ingredients</label>
+        <table class="ing-table">
+          <thead>
+            <tr>
+              <th style="width:25%">Qty</th>
+              <th style="width:25%">Unit</th>
+              <th style="width:45%">Ingredient</th>
+              <th style="width:5%"></th>
+            </tr>
+          </thead>
+          <tbody id="modal-ing-rows"></tbody>
+        </table>
+        <button type="button" class="btn-small" onclick="addIngredientRow()"><i class="ti ti-plus"></i> Add row</button>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tags Information</label>
+        <div class="tag-editor-box" id="modal-tag-box">
+          <input type="text" id="modal-tag-input" class="tag-input-inline" placeholder="Add tag + Enter..." onkeydown="handleTagInputKey(event)"/>
+        </div>
+        <div style="font-size:10px;color:var(--tm);margin-top:2px">Suggested tags:</div>
+        <div class="tag-suggestions" id="modal-tag-sug"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notes & Prep Details</label>
+        <textarea id="modal-comp-notes" class="form-textarea" rows="3" placeholder="Specify texture target, equipment required, or specific culinary techniques..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="filter-pill" onclick="closeModal('comp-modal')">Cancel</button>
+      <button class="save-btn" onclick="saveComponentModal()">Save Component</button>
+    </div>
+  </div>
+</div>
+
+<!-- DISH DETAIL MODAL -->
+<div class="modal-overlay" id="dish-modal">
+  <div class="modal-container">
+    <div class="modal-header">
+      <div class="modal-title" id="dish-modal-title">Dish Overview</div>
+      <button class="modal-close" onclick="closeModal('dish-modal')"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body" id="dish-modal-body"></div>
+    <div class="modal-footer">
+      <button class="save-btn" onclick="closeModal('dish-modal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── CONSTANTS & SEED DATA ─────────────────────────────────────────────────────
+const STORAGE_KEY = 'culinaryEngineState';
+const ROLES=[
+  {id:'BASE',      label:'Base vehicles',       color:'#C4736A'},
+  {id:'PRIMARY',   label:'Primary flavors',      color:'#E8A020'},
+  {id:'SECONDARY', label:'Secondary / aromatic', color:'#6B8F71'},
+  {id:'TEXTURE',   label:'Textures',             color:'#888780'},
+];
+const ALLERGENS=['Dairy','Gluten','Tree Nuts','Eggs','Sesame','Soy','Peanuts','Shellfish'];
+const PREDEFINED_TAGS=['Dairy','Gluten','Tree Nuts','Eggs','Sesame','Soy','Vegan','Vegetarian','Sweet','Sour','Bitter','Floral','Smoky','Tangy','Crispy','Silky','Chilled','Hot','Earthy'];
+
+const SEED_RECIPES=[
+  {
+    id:'seed-1',
+    title:'Smoked Hibiscus Yuzu Cheesecake Base with Dark Chocolate Ganache',
+    tags:['Dairy','Gluten','Eggs','Floral','Smoky','Tangy','Bitter'],
+    cat:'DESSERT',
+    bcg:'STAR',
+    chefNotes:'Ensure the Yuzu curd is emulsified before adding to the ganache layer.',
+    components:[
+      {id:'c1',role:'BASE'},
+      {id:'c9',role:'PRIMARY'},
+      {id:'c13',role:'PRIMARY'},
+      {id:'c16',role:'SECONDARY'}
+    ]
+  },
+  {
+    id:'seed-2',
+    title:'Jasmine Mango Pâte Sucrée with Toasted Almond Praline',
+    tags:['Dairy','Gluten','Tree Nuts','Floral','Tropical','Nutty','Sweet'],
+    cat:'DESSERT',
+    bcg:'PLOWHORSE',
+    chefNotes:'Bake crust until lightly golden brown. Dust with almond powder while hot.',
+    components:[
+      {id:'c4',role:'BASE'},
+      {id:'c7',role:'PRIMARY'},
+      {id:'c15',role:'SECONDARY'},
+      {id:'c20',role:'TEXTURE'}
+    ]
+  },
+];
+
+const SEED_STATE={
+  roles:{
+    BASE:{
+      collapsed:false,
+      unfiled:[],
+      folders:[
+        {id:'f-base-custards',name:'Custards',collapsed:false,comps:[
+          {id:'c1',name:'Cheesecake Base',time:20,passive:180,tags:['Dairy','Gluten','Sweet','Chilled'],dot:'#C4736A',ingredients:[{qty:'250',unit:'g',name:'Cream Cheese'},{qty:'100',unit:'g',name:'Sugar'},{qty:'2',unit:'pcs',name:'Eggs'}],notes:'Bake in water bath.'},
+          {id:'c2',name:'Vanilla Panna Cotta',time:10,passive:240,tags:['Dairy','Sweet','Silky'],dot:'#FAC775',ingredients:[{qty:'300',unit:'ml',name:'Heavy Cream'},{qty:'1',unit:'tsp',name:'Vanilla Bean Paste'}],notes:'Set with gelatin.'},
+          {id:'c3',name:'Crème Brûlée Base',time:15,passive:60,tags:['Dairy','Eggs','Sweet','Rich'],dot:'#E8A020',ingredients:[{qty:'4',unit:'yolks',name:'Egg Yolks'}],notes:''}
+        ]},
+        {id:'f-base-doughs',name:'Doughs',collapsed:false,comps:[
+          {id:'c4',name:'Pâte Sucrée',time:30,passive:60,tags:['Dairy','Gluten','Sweet'],dot:'#E8A020',ingredients:[{qty:'200',unit:'g',name:'Flour'},{qty:'100',unit:'g',name:'Butter'}],notes:'Keep dough cold while rolling.'},
+          {id:'c5',name:'Choux Pastry',time:25,passive:20,tags:['Dairy','Gluten','Eggs'],dot:'#EF9F27',ingredients:[],notes:''}
+        ]}
+      ]
+    },
+    PRIMARY:{
+      collapsed:false,
+      unfiled:[],
+      folders:[
+        {id:'f-primary-fruit',name:'Fruit',collapsed:false,comps:[
+          {id:'c7',name:'Mango Purée',time:10,passive:0,tags:['Vegan','Tropical','Sweet'],dot:'#E8A020',ingredients:[{qty:'500',unit:'g',name:'Fresh Mango'}],notes:''},
+          {id:'c8',name:'Lychee Compote',time:15,passive:0,tags:['Vegan','Floral','Sweet'],dot:'#C4736A',ingredients:[],notes:''},
+          {id:'c9',name:'Yuzu Curd',time:15,passive:20,tags:['Eggs','Dairy','Sour','Citric'],dot:'#EF9F27',ingredients:[{qty:'100',unit:'ml',name:'Yuzu Juice'},{qty:'3',unit:'pcs',name:'Eggs'}],notes:'Cook over double boiler until thick.'},
+          {id:'c10',name:'Raspberry Coulis',time:10,passive:0,tags:['Vegan','Tangy','Sweet'],dot:'#D4537E',ingredients:[],notes:''}
+        ]},
+        {id:'f-primary-chocolate',name:'Chocolate',collapsed:false,comps:[
+          {id:'c13',name:'Dark Chocolate Ganache',time:12,passive:30,tags:['Dairy','Bitter','Rich','Silky'],dot:'#2C2C2A',ingredients:[{qty:'200',unit:'g',name:'70% Dark Chocolate'},{qty:'200',unit:'ml',name:'Cream'}],notes:'Emulsify gently.'}
+        ]}
+      ]
+    },
+    SECONDARY:{
+      collapsed:false,
+      unfiled:[],
+      folders:[
+        {id:'f-secondary-floral',name:'Floral',collapsed:false,comps:[
+          {id:'c15',name:'Jasmine Tea Infusion',time:5,passive:15,tags:['Vegan','Floral','Hot'],dot:'#6B8F71',ingredients:[{qty:'10',unit:'g',name:'Jasmine Green Tea'}],notes:''},
+          {id:'c16',name:'Smoked Hibiscus Syrup',time:20,passive:30,tags:['Vegan','Floral','Smoky','Tangy'],dot:'#C4736A',ingredients:[{qty:'50',unit:'g',name:'Dried Hibiscus'},{qty:'200',unit:'g',name:'Sugar'}],notes:'Infuse wood smoke prior to strain.'}
+        ]}
+      ]
+    },
+    TEXTURE:{
+      collapsed:false,
+      unfiled:[],
+      folders:[
+        {id:'f-texture-crunch',name:'Crunch',collapsed:false,comps:[
+          {id:'c20',name:'Toasted Almond Praline',time:20,passive:10,tags:['Tree Nuts','Nutty','Crispy'],dot:'#E8A020',ingredients:[{qty:'150',unit:'g',name:'Almonds'},{qty:'100',unit:'g',name:'Caramelized Sugar'}],notes:'Crush finely in food processor.'}
+        ]}
+      ]
+    }
+  },
+  assembly:{BASE:[],PRIMARY:[],SECONDARY:[],TEXTURE:[]},
+  savedRecipes:[],
+  nextId:500
+};
+
+// ── LOCAL STORAGE INITIALIZATION ──────────────────────────────────────────────
+function loadState(){
+  try {
+    const localData = localStorage.getItem(STORAGE_KEY);
+    if(localData) return JSON.parse(localData);
+  } catch(e) {
+    console.error("Failed to load state from localStorage:", e);
+  }
+  return JSON.parse(JSON.stringify(SEED_STATE));
+}
+
+let state = loadState();
+
+function saveState(){
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch(e) {
+    console.error("Failed to save state to localStorage:", e);
+  }
+}
+
+function resetToDefaults(){
+  if(confirm("Reset all custom components and recipes back to initial defaults?")){
+    localStorage.removeItem(STORAGE_KEY);
+    state = JSON.parse(JSON.stringify(SEED_STATE));
+    renderTree();
+    updateSlots();
+    if(document.getElementById('tab-registry').style.display !== 'none'){
+      renderRegistry(currentRegistryFilter);
+    }
+    if(document.getElementById('tab-recipes').style.display !== 'none'){
+      renderRecipes();
+    }
+  }
+}
+
+// ── STATE HELPERS ─────────────────────────────────────────────────────────────
+const ROLE_DOTS={BASE:'#C4736A',PRIMARY:'#E8A020',SECONDARY:'#6B8F71',TEXTURE:'#888780'};
+const SLOT_MAXES={BASE:1,PRIMARY:3,SECONDARY:3,TEXTURE:3};
+let modalTags=[];
+let currentRegistryFilter=null;
+
+function uid(){return'id'+(++state.nextId)}
+
+function allComps(){
+  const r=[];
+  for(const rId of Object.keys(state.roles)){
+    const roleObj=state.roles[rId];
+    if(roleObj.unfiled){
+      for(const c of roleObj.unfiled) r.push({...c,role:rId,folderId:null});
+    }
+    for(const f of roleObj.folders){
+      for(const c of f.comps) r.push({...c,role:rId,folderId:f.id});
+    }
+  }
+  return r;
+}
+
+function findComp(id){return allComps().find(c=>c.id===id)||null}
+
+function findFolder(fid){
+  if(!fid)return null;
+  for(const rId of Object.keys(state.roles)){
+    const f=state.roles[rId].folders.find(f=>f.id===fid);
+    if(f)return{roleId:rId,folder:f};
+  }
+  return null;
+}
+
+function addFolder(roleId){
+  const n=state.roles[roleId].folders.length+1;
+  const id=uid();
+  state.roles[roleId].folders.push({id,name:'New folder '+n,collapsed:false,comps:[]});
+  saveState();
+  return id;
+}
+
+function renameFolder(fid,name){
+  const f=findFolder(fid);
+  if(f){
+    f.folder.name=name||f.folder.name;
+    saveState();
+  }
+}
+
+function deleteFolder(fid){
+  const f=findFolder(fid);
+  if(!f)return;
+  for(const c of f.folder.comps){
+    for(const r of Object.keys(state.assembly))state.assembly[r]=state.assembly[r].filter(id=>id!==c.id);
+  }
+  state.roles[f.roleId].folders=state.roles[f.roleId].folders.filter(x=>x.id!==fid);
+  saveState();
+}
+
+function toggleFolder(fid){
+  const f=findFolder(fid);
+  if(f){
+    f.folder.collapsed=!f.folder.collapsed;
+    saveState();
+  }
+}
+
+function toggleRole(rId){
+  state.roles[rId].collapsed=!state.roles[rId].collapsed;
+  saveState();
+}
+
+function removeComp(cid){
+  for(const rId of Object.keys(state.roles)){
+    const roleObj=state.roles[rId];
+    roleObj.unfiled=(roleObj.unfiled||[]).filter(c=>c.id!==cid);
+    for(const f of roleObj.folders) f.comps=f.comps.filter(c=>c.id!==cid);
+  }
+  for(const r of Object.keys(state.assembly))state.assembly[r]=state.assembly[r].filter(id=>id!==cid);
+  saveState();
+}
+
+function addToSlot(cid,role){
+  if(state.assembly[role].includes(cid))return;
+  if(state.assembly[role].length>=SLOT_MAXES[role])state.assembly[role].shift();
+  state.assembly[role].push(cid);
+  saveState();
+}
+
+function removeFromSlot(role,cid){
+  state.assembly[role]=state.assembly[role].filter(id=>id!==cid);
+  saveState();
+}
+
+function clearAssembly(){
+  state.assembly={BASE:[],PRIMARY:[],SECONDARY:[],TEXTURE:[]};
+  saveState();
+}
+
+function assemblyComps(){return['BASE','PRIMARY','SECONDARY','TEXTURE'].flatMap(r=>state.assembly[r].map(id=>findComp(id)).filter(Boolean))}
+
+function buildTitle(){
+  const get=r=>state.assembly[r].map(id=>findComp(id)).filter(Boolean);
+  const b=get('BASE'),p=get('PRIMARY'),s=get('SECONDARY'),t=get('TEXTURE');
+  const parts=[];
+  if(s.length)parts.push(s.map(c=>c.name.split(' ')[0]).join('-'));
+  if(p.length)parts.push(p.map(c=>c.name).join(' & '));
+  if(b.length)parts.push(b[0].name);
+  if(t.length)parts.push('with '+t.map(c=>c.name).join(' and '));
+  return parts.join(' ');
+}
+
+function inheritedMeta(){
+  const comps=assemblyComps();
+  const tags=[...new Set(comps.flatMap(c=>c.tags||[]))];
+  return{
+    tags,
+    allergens:tags.filter(t=>ALLERGENS.includes(t)),
+    dietTags:tags.filter(t=>['Vegan','Vegetarian','Gluten-Free'].includes(t)),
+    totalTime:comps.reduce((s,c)=>s+(c.time||0)+(c.passive||0),0)
+  };
+}
+
+// ── UI TREE RENDER ─────────────────────────────────────────────────────────────
+let editingFolderId=null;
+
+function renderTree(){
+  const tree=document.getElementById('sidebar-tree');
+  tree.innerHTML='';
+  for(const role of ROLES){
+    const rs=state.roles[role.id];
+    const unfiledCount=(rs.unfiled||[]).length;
+    const total=rs.folders.reduce((s,f)=>s+f.comps.length,0)+unfiledCount;
+    
+    const sec=document.createElement('div');sec.className='role-section';
+    const rh=document.createElement('div');rh.className='role-header';
+    const chev=document.createElement('i');chev.className='ti ti-chevron-right role-chevron'+(rs.collapsed?'':' open');
+    const dot=document.createElement('div');dot.className='role-dot';dot.style.background=role.color;
+    const lbl=document.createElement('span');lbl.className='role-name';lbl.textContent=role.label;
+    const cnt=document.createElement('span');cnt.className='role-count';cnt.textContent=total;
+    const addBtn=document.createElement('button');addBtn.className='role-add';addBtn.title='Add folder';
+    addBtn.innerHTML='<i class="ti ti-folder-plus"></i>';
+    addBtn.onclick=e=>{e.stopPropagation();editingFolderId=addFolder(role.id);renderTree()};
+    
+    rh.append(chev,dot,lbl,cnt,addBtn);
+    rh.addEventListener('click',e=>{if(e.target.closest('.role-add'))return;toggleRole(role.id);renderTree()});
+    sec.appendChild(rh);
+    
+    if(!rs.collapsed){
+      const body=document.createElement('div');body.className='role-body';
+      for(const f of rs.folders) body.appendChild(mkFolder(role.id,f));
+      if(unfiledCount>0){
+        const ufFold={id:null,name:'Unfiled',collapsed:false,comps:rs.unfiled};
+        body.appendChild(mkFolder(role.id,ufFold,true));
+      }
+      sec.appendChild(body);
+    }
+    tree.appendChild(sec);
+  }
+}
+
+function mkFolder(roleId,folder,isUnfiled=false){
+  const fd=document.createElement('div');fd.className='folder';
+  const fh=document.createElement('div');fh.className='folder-header';
+  const chev=document.createElement('i');chev.className='ti ti-chevron-right folder-chevron'+(folder.collapsed?'':' open');
+  const isOpen=!folder.collapsed;
+  const ficon=document.createElement('i');ficon.className='ti ti-folder'+(isOpen?'-open':'')+' folder-icon'+(isOpen?' open':'');
+  
+  let nameEl;
+  if(editingFolderId===folder.id && !isUnfiled){
+    nameEl=document.createElement('input');nameEl.className='folder-name-input';nameEl.value=folder.name;nameEl.onclick=e=>e.stopPropagation();
+    const commit=()=>{renameFolder(folder.id,nameEl.value);editingFolderId=null;renderTree()};
+    nameEl.onkeydown=e=>{if(e.key==='Enter')commit();if(e.key==='Escape'){editingFolderId=null;renderTree()}};
+    nameEl.onblur=commit;setTimeout(()=>{nameEl.focus();nameEl.select()},0);
+  }else{
+    nameEl=document.createElement('span');nameEl.className='folder-name';nameEl.textContent=folder.name;
+  }
+  
+  const acts=document.createElement('div');acts.className='folder-actions';
+  const bAdd=document.createElement('button');bAdd.className='fa-btn add';bAdd.title='Add component';bAdd.innerHTML='<i class="ti ti-plus"></i>';
+  bAdd.onclick=e=>{e.stopPropagation();openComponentModal(null,roleId,folder.id)};
+  
+  acts.append(bAdd);
+  if(!isUnfiled){
+    const bRen=document.createElement('button');bRen.className='fa-btn rename';bRen.title='Rename folder';bRen.innerHTML='<i class="ti ti-pencil"></i>';
+    bRen.onclick=e=>{e.stopPropagation();editingFolderId=folder.id;renderTree()};
+    const bDel=document.createElement('button');bDel.className='fa-btn';bDel.title='Delete folder';bDel.innerHTML='<i class="ti ti-trash"></i>';
+    bDel.onclick=e=>{e.stopPropagation();if(confirm('Delete folder "'+folder.name+'"?')){deleteFolder(folder.id);renderTree();updateSlots()}};
+    acts.append(bRen,bDel);
+  }
+
+  fh.append(chev,ficon,nameEl,acts);
+  fh.addEventListener('click',e=>{if(e.target.closest('.folder-actions,.folder-name-input'))return;if(!isUnfiled)toggleFolder(folder.id);renderTree()});
+  fd.appendChild(fh);
+  
+  if(!folder.collapsed){
+    const fb=document.createElement('div');fb.className='folder-body';
+    for(const c of folder.comps) fb.appendChild(mkCompItem(c,roleId));
+    fd.appendChild(fb);
+  }
+  return fd;
+}
+
+function mkCompItem(comp,roleId){
+  const ci=document.createElement('div');ci.className='comp-item';ci.draggable=true;
+  const dot=document.createElement('div');dot.className='comp-dot';dot.style.background=comp.dot||ROLE_DOTS[roleId];
+  const nm=document.createElement('span');nm.className='comp-name';nm.textContent=comp.name;nm.title=comp.name;
+  
+  const acts=document.createElement('div');acts.className='comp-actions';
+  const ed=document.createElement('button');ed.className='comp-btn';ed.title='Edit Component';ed.innerHTML='<i class="ti ti-pencil"></i>';
+  ed.onclick=e=>{e.stopPropagation();openComponentModal(comp.id)};
+  
+  const rm=document.createElement('button');rm.className='comp-btn del';rm.title='Remove Component';rm.innerHTML='<i class="ti ti-trash"></i>';
+  rm.onclick=e=>{e.stopPropagation();removeComp(comp.id);renderTree();updateSlots()};
+  
+  acts.append(ed,rm);
+  ci.append(dot,nm,acts);
+  
+  ci.addEventListener('dragstart',e=>{window._dragId=comp.id;window._dragRole=roleId;e.dataTransfer.effectAllowed='copy'});
+  ci.addEventListener('click',e=>{if(e.target.closest('.comp-actions'))return;addToSlot(comp.id,roleId);updateSlots()});
+  return ci;
+}
+
+// ── SLOTS & PREVIEW ──────────────────────────────────────────────────────────
+function updateSlots(){
+  for(const role of['BASE','PRIMARY','SECONDARY','TEXTURE']){
+    const slot=document.getElementById('slot-'+role);
+    slot.querySelectorAll('.slot-tag').forEach(el=>el.remove());
+    for(const cid of state.assembly[role]){
+      const c=findComp(cid);if(!c)continue;
+      const tag=document.createElement('div');tag.className='slot-tag';
+      const dot=document.createElement('div');dot.style.cssText='width:6px;height:6px;border-radius:50%;background:'+(c.dot||ROLE_DOTS[role])+';flex-shrink:0';
+      const lbl=document.createElement('span');lbl.textContent=c.name;
+      const rm=document.createElement('button');rm.className='rm';rm.textContent='×';rm.title='Remove';rm.onclick=()=>{removeFromSlot(role,cid);updateSlots()};
+      tag.append(dot,lbl,rm);slot.appendChild(tag);
+    }
+    const emp=document.getElementById('empty-'+role);if(emp)emp.style.display=state.assembly[role].length?'none':'flex';
+  }
+  updatePreview();
+}
+
+function updatePreview(){
+  const comps=assemblyComps(),hasAny=comps.length>0;
+  const tp=document.getElementById('title-preview');
+  tp.textContent=hasAny?buildTitle():'Start adding components below';
+  tp.className='title-text'+(hasAny?'':' empty');
+  const{tags,allergens,dietTags,totalTime}=inheritedMeta();
+  const mr=document.getElementById('meta-row');mr.innerHTML='';
+  if(totalTime>0)mr.innerHTML+='<span class="meta-chip time"><i class="ti ti-clock"></i> '+totalTime+' min total</span>';
+  allergens.forEach(a=>mr.innerHTML+='<span class="meta-chip allergen"><i class="ti ti-alert-triangle"></i> '+a+'</span>');
+  dietTags.forEach(d=>mr.innerHTML+='<span class="meta-chip diet">'+d+'</span>');
+  const tg=document.getElementById('inherited-tags');
+  tg.innerHTML=tags.length?tags.map(t=>'<span class="tag-pill'+(ALLERGENS.includes(t)?' allergen':'')+'">'+t+'</span>').join(''):'<span class="tags-placeholder">Rolls up automatically from components</span>';
+  document.getElementById('save-btn').disabled=!hasAny;
+}
+
+function doDragover(e,role){e.preventDefault();e.currentTarget.classList.add('dragover')}
+function doLeave(e){e.currentTarget.classList.remove('dragover')}
+function doDrop(e,role){e.preventDefault();e.currentTarget.classList.remove('dragover');const id=window._dragId,fr=window._dragRole||role;if(id){addToSlot(id,fr);updateSlots();window._dragId=null;window._dragRole=null}}
+
+function onSaveRecipe(){
+  const get=r=>state.assembly[r].map(id=>findComp(id)).filter(Boolean);
+  const comps=['BASE','PRIMARY','SECONDARY','TEXTURE'].flatMap(r=>get(r));
+  const compRefs=comps.map(c=>({id:c.id,role:c.role}));
+  
+  state.savedRecipes.push({
+    id:uid(),
+    title:buildTitle(),
+    tags:[...new Set(comps.flatMap(c=>c.tags||[]))],
+    cat:'DESSERT',
+    bcg:'STAR',
+    chefNotes:'Created via Dish Builder.',
+    components:compRefs
+  });
+  clearAssembly();
+  saveState();
+  updateSlots();
+  switchTab('recipes');
+}
+
+// ── COMPONENT MODAL LOGIC ─────────────────────────────────────────────────────
+function openComponentModal(compId=null,defaultRole='BASE',defaultFolderId=null){
+  const isEdit=!!compId;
+  document.getElementById('comp-modal-title').textContent=isEdit?'Edit Component':'Create Component';
+  document.getElementById('modal-comp-id').value=compId||'';
+  
+  const comp=isEdit?findComp(compId):{name:'',time:0,passive:0,tags:[],ingredients:[],notes:'',role:defaultRole,folderId:defaultFolderId};
+  document.getElementById('modal-comp-name').value=comp.name||'';
+  document.getElementById('modal-comp-role').value=comp.role||defaultRole;
+  document.getElementById('modal-comp-time').value=comp.time||0;
+  document.getElementById('modal-comp-passive').value=comp.passive||0;
+  document.getElementById('modal-comp-notes').value=comp.notes||'';
+  
+  populateFolderOptions(comp.folderId);
+  
+  const ingBody=document.getElementById('modal-ing-rows');ingBody.innerHTML='';
+  if(comp.ingredients&&comp.ingredients.length){
+    comp.ingredients.forEach(i=>addIngredientRow(i.qty,i.unit,i.name));
+  }else{
+    addIngredientRow();
+  }
+  
+  modalTags=[...(comp.tags||[])];
+  renderModalTags();
+  renderTagSuggestions();
+  
+  document.getElementById('comp-modal').classList.add('open');
+}
+
+function populateFolderOptions(selectedFolderId=null){
+  const roleId=document.getElementById('modal-comp-role').value;
+  const select=document.getElementById('modal-comp-folder');
+  select.innerHTML='<option value="">-- Unfiled / No Folder --</option>';
+  
+  if(state.roles[roleId]&&state.roles[roleId].folders){
+    for(const f of state.roles[roleId].folders){
+      const opt=document.createElement('option');
+      opt.value=f.id;
+      opt.textContent=f.name;
+      if(f.id===selectedFolderId)opt.selected=true;
+      select.appendChild(opt);
+    }
+  }
+}
+
+function addIngredientRow(qty='',unit='',name=''){
+  const tbody=document.getElementById('modal-ing-rows');
+  const tr=document.createElement('tr');
+  tr.innerHTML=`
+    <td><input type="text" class="ing-qty" value="${qty}" placeholder="100"/></td>
+    <td><input type="text" class="ing-unit" value="${unit}" placeholder="g"/></td>
+    <td><input type="text" class="ing-name" value="${name}" placeholder="Sugar"/></td>
+    <td><button type="button" class="comp-btn del" onclick="this.closest('tr').remove()"><i class="ti ti-x"></i></button></td>
+  `;
+  tbody.appendChild(tr);
+}
+
+function handleTagInputKey(e){
+  if(e.key==='Enter'){
+    e.preventDefault();
+    const val=e.target.value.trim();
+    if(val && !modalTags.includes(val)){
+      modalTags.push(val);
+      renderModalTags();
+    }
+    e.target.value='';
+  }
+}
+
+function renderModalTags(){
+  const box=document.getElementById('modal-tag-box');
+  box.querySelectorAll('.tag-editor-chip').forEach(el=>el.remove());
+  const input=document.getElementById('modal-tag-input');
+  
+  modalTags.forEach(t=>{
+    const chip=document.createElement('span');chip.className='tag-editor-chip';
+    chip.innerHTML=`${t} <i class="ti ti-x remove" onclick="removeModalTag('${t}')"></i>`;
+    box.insertBefore(chip,input);
+  });
+}
+
+function removeModalTag(tag){
+  modalTags=modalTags.filter(t=>t!==tag);
+  renderModalTags();
+}
+
+function renderTagSuggestions(){
+  const sugDiv=document.getElementById('modal-tag-sug');sugDiv.innerHTML='';
+  PREDEFINED_TAGS.forEach(t=>{
+    const p=document.createElement('span');p.className='tag-sug-pill';p.textContent='+ '+t;
+    p.onclick=()=>{if(!modalTags.includes(t)){modalTags.push(t);renderModalTags()}};
+    sugDiv.appendChild(p);
+  });
+}
+
+function saveComponentModal(){
+  const id=document.getElementById('modal-comp-id').value;
+  const name=document.getElementById('modal-comp-name').value.trim();
+  if(!name){alert('Please provide a component name.');return}
+  
+  const roleId=document.getElementById('modal-comp-role').value;
+  const folderId=document.getElementById('modal-comp-folder').value;
+  const time=parseInt(document.getElementById('modal-comp-time').value,10)||0;
+  const passive=parseInt(document.getElementById('modal-comp-passive').value,10)||0;
+  const notes=document.getElementById('modal-comp-notes').value.trim();
+  
+  const ingredients=[];
+  document.querySelectorAll('#modal-ing-rows tr').forEach(tr=>{
+    const qty=tr.querySelector('.ing-qty').value.trim();
+    const unit=tr.querySelector('.ing-unit').value.trim();
+    const ingName=tr.querySelector('.ing-name').value.trim();
+    if(ingName)ingredients.push({qty,unit,name:ingName});
+  });
+  
+  if(id){
+    removeComp(id);
+  }
+  
+  const compData={
+    id:id||uid(),
+    name,
+    time,
+    passive,
+    tags:[...modalTags],
+    dot:ROLE_DOTS[roleId]||'#888780',
+    ingredients,
+    notes
+  };
+  
+  if(folderId){
+    const fObj=findFolder(folderId);
+    if(fObj) fObj.folder.comps.push(compData);
+  }else{
+    if(!state.roles[roleId].unfiled)state.roles[roleId].unfiled=[];
+    state.roles[roleId].unfiled.push(compData);
+  }
+  
+  saveState();
+  closeModal('comp-modal');
+  renderTree();
+  updateSlots();
+  if(document.getElementById('tab-registry').style.display!=='none'){
+    renderRegistry(currentRegistryFilter);
+  }
+}
+
+function closeModal(id){
+  document.getElementById(id).classList.remove('open');
+}
+
+// ── REGISTRY & RECIPES ────────────────────────────────────────────────────────
+function renderRegistry(filter=null){
+  currentRegistryFilter=filter;
+  const bar=document.getElementById('reg-filter-bar');bar.innerHTML='<span class="filter-label">Role:</span>';
+  const mkBtn=(label,active,fn)=>{const b=document.createElement('button');b.className='filter-pill'+(active?' on':'');b.textContent=label;b.onclick=fn;bar.appendChild(b)};
+  mkBtn('All',filter===null,()=>renderRegistry(null));
+  for(const r of ROLES)mkBtn(r.label,filter===r.id,()=>renderRegistry(r.id));
+  
+  const searchQuery=(document.getElementById('reg-search-input').value||'').toLowerCase().trim();
+  
+  let comps=filter?allComps().filter(c=>c.role===filter):allComps();
+  
+  if(searchQuery){
+    comps=comps.filter(c=>
+      c.name.toLowerCase().includes(searchQuery) ||
+      (c.tags||[]).some(t=>t.toLowerCase().includes(searchQuery))
+    );
+  }
+
+  const grid=document.getElementById('reg-grid');grid.innerHTML='';
+  for(const c of comps){
+    const card=document.createElement('div');card.className='recipe-card';
+    card.onclick=()=>openComponentModal(c.id);
+    card.innerHTML='<div><div class="rc-cat">'+c.role+'</div><div class="rc-title">'+c.name+'</div><div style="font-size:11px;color:#9c9a96;margin:4px 0 8px;display:flex;align-items:center;gap:4px"><i class="ti ti-clock"></i>'+c.time+'m active'+(c.passive?' + '+c.passive+'m passive':'')+'</div></div><div class="rc-tags">'+(c.tags||[]).map(t=>'<span class="rc-tag'+(ALLERGENS.includes(t)?' allergen':'')+'">'+t+'</span>').join('')+'</div>';
+    grid.appendChild(card);
+  }
+
+  const addCard=document.createElement('div');
+  addCard.className='reg-add-card';
+  addCard.onclick=()=>openComponentModal(null, filter || 'BASE');
+  addCard.innerHTML=`
+    <div class="reg-add-btn"><i class="ti ti-plus"></i></div>
+    <div class="reg-add-text">Add Component</div>
+  `;
+  grid.appendChild(addCard);
+}
+
+function onRegistrySearch(){
+  renderRegistry(currentRegistryFilter);
+}
+
+function renderRecipes(){
+  const grid=document.getElementById('recipe-grid'),empty=document.getElementById('recipe-empty');
+  grid.innerHTML='';
+  const recipes=[...SEED_RECIPES,...state.savedRecipes];
+  if(!recipes.length){empty.style.display='flex';return}
+  empty.style.display='none';
+  for(const r of recipes){
+    const card=document.createElement('div');card.className='recipe-card';
+    card.onclick=()=>openDishModal(r);
+    card.innerHTML='<div class="rc-cat"><span>'+r.cat+'</span><span class="bcg-badge bcg-'+r.bcg+'">'+r.bcg+'</span></div><div class="rc-title">'+r.title+'</div><div class="rc-tags">'+(r.tags||[]).map(t=>'<span class="rc-tag'+(ALLERGENS.includes(t)?' allergen':'')+'">'+t+'</span>').join('')+'</div>';
+    grid.appendChild(card);
+  }
+}
+
+function openDishModal(recipe){
+  document.getElementById('dish-modal-title').textContent=recipe.title;
+  const body=document.getElementById('dish-modal-body');
+  
+  let compDetailsHTML='';
+  let resolvedComps=[];
+  
+  if(recipe.components&&recipe.components.length){
+    resolvedComps=recipe.components.map(rc=>findComp(rc.id)).filter(Boolean);
+  }
+  
+  ROLES.forEach(r=>{
+    const roleComps=resolvedComps.filter(c=>c.role===r.id);
+    if(roleComps.length){
+      compDetailsHTML+=`<div class="dish-sec"><div class="dish-sec-title">${r.label}</div>`;
+      roleComps.forEach(c=>{
+        const ingStr=(c.ingredients||[]).map(i=>`<li>${i.qty} ${i.unit} ${i.name}</li>`).join('');
+        compDetailsHTML+=`
+          <div class="dish-comp-card">
+            <div class="dish-comp-head">
+              <span>${c.name}</span>
+              <span style="color:var(--tm);font-size:11px">${c.time}m active</span>
+            </div>
+            ${ingStr?`<ul class="dish-comp-ings">${ingStr}</ul>`:''}
+            ${c.notes?`<div style="font-size:11px;color:var(--tm);margin-top:4px;font-style:italic">Note: ${c.notes}</div>`:''}
+          </div>
+        `;
+      });
+      compDetailsHTML+=`</div>`;
+    }
+  });
+
+  const totalActive=resolvedComps.reduce((s,c)=>s+(c.time||0),0);
+  const totalPassive=resolvedComps.reduce((s,c)=>s+(c.passive||0),0);
+
+  body.innerHTML=`
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px">
+      <span class="bcg-badge bcg-${recipe.bcg}">${recipe.bcg} Matrix</span>
+      <span class="meta-chip time"><i class="ti ti-clock"></i> ${totalActive}m active / ${totalPassive}m passive</span>
+    </div>
+    
+    <div class="dish-sec">
+      <div class="dish-sec-title">Component Breakdown</div>
+      ${compDetailsHTML || '<div style="font-size:12px;color:var(--tm)">No component structural detail recorded.</div>'}
+    </div>
+    
+    <div class="dish-sec">
+      <div class="dish-sec-title">Allergens & Tags</div>
+      <div class="tag-grid">
+        ${(recipe.tags||[]).map(t=>`<span class="tag-pill ${ALLERGENS.includes(t)?'allergen':''}">${t}</span>`).join('')}
+      </div>
+    </div>
+    
+    ${recipe.chefNotes?`
+      <div class="dish-sec">
+        <div class="dish-sec-title">Chef Notes</div>
+        <p style="font-size:12px;color:var(--ts);line-height:1.4">${recipe.chefNotes}</p>
+      </div>
+    `:''}
+  `;
+  
+  document.getElementById('dish-modal').classList.add('open');
+}
+
+function switchTab(tab){
+  ['builder','registry','recipes'].forEach(t=>document.getElementById('tab-'+t).style.display=t===tab?'':'none');
+  document.querySelectorAll('.ntab').forEach((b,i)=>b.classList.toggle('active',['builder','registry','recipes'][i]===tab));
+  if(tab==='registry')renderRegistry(null);
+  if(tab==='recipes')renderRecipes();
+}
+
+// Init
+renderTree();
+updateSlots();
+</script>
+</body>
+</html>
