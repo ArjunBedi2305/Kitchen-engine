@@ -59,11 +59,72 @@ const SEED_STATE = {
           ]
         },
         {
-          id: 'f-base-doughs', name: 'Doughs', collapsed: false, comps: [
+          id: 'f-base-doughs', name: 'Doughs & Breads', collapsed: false, comps: [
             { id: 'c4', name: 'Pâte Sucrée', time: 30, passive: 60, tags: ['Dairy', 'Gluten', 'Sweet'], dot: '#E8A020', ingredients: [{ qty: '200', unit: 'g', name: 'Flour' }, { qty: '100', unit: 'g', name: 'Butter' }], notes: 'Keep dough cold while rolling.' },
-            { id: 'c5', name: 'Choux Pastry', time: 25, passive: 20, tags: ['Dairy', 'Gluten', 'Eggs'], dot: '#EF9F27', ingredients: [], notes: '' }
+            { id: 'c5', name: 'Choux Pastry', time: 25, passive: 20, tags: ['Dairy', 'Gluten', 'Eggs'], dot: '#EF9F27', ingredients: [], notes: '' },
+            { id: 'c500', name: 'Sourdough Baguette', time: 45, passive: 720, tags: ['Gluten', 'Crispy'], dot: '#C4736A', ingredients: [{ qty: '500', unit: 'g', name: 'Bread flour' }], notes: 'Long cold proof.' },
+            { id: 'c501', name: 'Brioche Bun', time: 30, passive: 180, tags: ['Dairy', 'Gluten', 'Eggs'], dot: '#C4736A', ingredients: [{ qty: '250', unit: 'g', name: '00 flour' }], notes: '' },
+            { id: 'c502', name: 'Naan / Pita Dough', time: 20, passive: 60, tags: ['Gluten'], dot: '#C4736A', ingredients: [], notes: '' },
+            { id: 'c503', name: 'Fresh Pasta Dough (Egg)', time: 30, passive: 30, tags: ['Gluten', 'Eggs'], dot: '#C4736A', ingredients: [], notes: 'Semolina & 00 Flour mix.' }
           ]
-        }
+        },
+        {
+          id: 'f-base-grains', name: 'Rice, Grains & Starches', collapsed: false, comps: [
+            { id: 'c504', name: 'Steamed Jasmine Rice', time: 5, passive: 20, tags: ['Vegan'], dot: '#C4736A', ingredients: [{ qty: '200', unit: 'g', name: 'Jasmine rice' }], notes: '' },
+            { id: 'c505', name: 'Seasoned Sushi Rice', time: 10, passive: 25, tags: ['Vegan'], dot: '#C4736A', ingredients: [{ qty: '300', unit: 'g', name: 'Sushi rice' }, { qty: '30', unit: 'ml', name: 'Rice wine vinegar' }], notes: '' },
+            { id: 'c506', name: 'Arborio Risotto Base', time: 25, passive: 0, tags: ['Vegetarian', 'Dairy'], dot: '#C4736A', ingredients: [{ qty: '200', unit: 'g', name: 'Arborio rice' }, { qty: '50', unit: 'g', name: 'Parmigiano-Reggiano' }], notes: '' },
+            { id: 'c507', name: 'Creamy Polenta / Grits', time: 30, passive: 0, tags: ['Vegetarian', 'Dairy'], dot: '#C4736A', ingredients: [], notes: '' }
+          ]
+        },
+        {
+          id: 'f-base-proteins', name: 'Proteins & Main Seared Cuts', collapsed: false, comps: [
+            { id: 'c508', name: 'Seared Ribeye Steak', time: 15, passive: 10, tags: ['Rich', 'Hot'], dot: '#C4736A', ingredients: [{ qty: '1', unit: 'cut', name: 'Ribeye' }], notes: 'Cast iron sear finish.' },
+            { id: 'c509', name: 'Crispy Skin Salmon Fillet', time: 10, passive: 0, tags: ['Hot'], dot: '#C4736A', ingredients: [{ qty: '200', unit: 'g', name: 'Salmon fillet' }], notes: '' },
+            { id: 'c510', name: 'Sous Vide Duck Breast', time: 15, passive: 90, tags: ['Rich'], dot: '#C4736A', ingredients: [{ qty: '1', unit: 'pc', name: 'Duck breast' }], notes: 'Score skin prior to pan roast.' },
+            { id: 'c511', name: 'Seared Pan-Tofu', time: 12, passive: 0, tags: ['Vegan'], dot: '#C4736A', ingredients: [{ qty: '200', unit: 'g', name: 'Firm tofu' }], notes: '' }
+          ]
+        },
+        {
+  id: 'f-base-proteins-expanded',
+  name: 'Proteins (Common & Specialty)',
+  collapsed: false,
+  comps: [
+    // ── 20 COMMON PROTEINS ───────────────────────────────────────────
+    { id: 'c-prot-1', name: 'Chicken Breast', time: 15, passive: 0, tags: ['Hot'], dot: '#C4736A', ingredients: [{ qty: '200', unit: 'g', name: 'Chicken breast' }], notes: 'Pan sear or grill.' },
+    { id: 'c-prot-2', name: 'Chicken Thigh (Boneless)', time: 20, passive: 0, tags: ['Hot', 'Rich'], dot: '#C4736A', ingredients: [{ qty: '200', unit: 'g', name: 'Chicken thigh' }], notes: 'High moisture retention.' },
+    { id: 'c-prot-3', name: 'Ground Beef (80/20)', time: 12, passive: 0, tags: ['Hot', 'Rich'], dot: '#C4736A', ingredients: [{ qty: '200', unit: 'g', name: 'Ground beef' }], notes: 'Ideal for smash patties or ragù.' },
+    { id: 'c-prot-4', name: 'Beef Chuck Roast', time: 25, passive: 180, tags: ['Hot', 'Rich'], dot: '#C4736A', ingredients: [{ qty: '500', unit: 'g', name: 'Chuck roast' }], notes: 'Braised low and slow.' },
+    { id: 'c-prot-5', name: 'Ribeye Steak', time: 15, passive: 10, tags: ['Hot', 'Rich'], dot: '#C4736A', ingredients: [{ qty: '1', unit: 'cut', name: 'Ribeye' }], notes: 'Cast iron finish.' },
+    { id: 'c-prot-6', name: 'Pork Chops', time: 15, passive: 0, tags: ['Hot'], dot: '#C4736A', ingredients: [{ qty: '1', unit: 'cut', name: 'Pork chop' }], notes: 'Brine prior to searing.' },
+    { id: 'c-prot-7', name: 'Pork Shoulder / Butt', time: 30, passive: 360, tags: ['Hot', 'Rich', 'Smoky'], dot: '#C4736A', ingredients: [{ qty: '1', unit: 'kg', name: 'Pork shoulder' }], notes: 'Slow roast or smoke for pulled pork.' },
+    { id: 'c-prot-8', name: 'Pork Belly', time: 30, passive: 120, tags: ['Hot', 'Rich', 'Crispy'], dot: '#C4736A', ingredients: [{ qty: '400', unit: 'g', name: 'Pork belly' }], notes: 'Score skin for crackling.' },
+    { id: 'c-prot-9', name: 'Bacon / Strip Bacon', time: 8, passive: 0, tags: ['Crispy', 'Smoky', 'Rich'], dot: '#C4736A', ingredients: [{ qty: '4', unit: 'slices', name: 'Bacon' }], notes: 'Render fat slowly.' },
+    { id: 'c-prot-10', name: 'Salmon Fillet', time: 12, passive: 0, tags: ['Hot'], dot: '#C4736A', ingredients: [{ qty: '200', unit: 'g', name: 'Salmon fillet' }], notes: 'Sear skin-side down first.' },
+    { id: 'c-prot-11', name: 'Jumbo Shrimp / Prawns', time: 6, passive: 0, tags: ['Shellfish', 'Hot'], dot: '#C4736A', ingredients: [{ qty: '150', unit: 'g', name: 'Shrimp' }], notes: 'Quick flash sear or poach.' },
+    { id: 'c-prot-12', name: 'Canned / Fresh Tuna Loin', time: 8, passive: 0, tags: ['Hot'], dot: '#C4736A', ingredients: [{ qty: '150', unit: 'g', name: 'Tuna loin' }], notes: 'High heat sear exterior only.' },
+    { id: 'c-prot-13', name: 'Cod Fillet', time: 10, passive: 0, tags: ['Hot', 'Silky'], dot: '#C4736A', ingredients: [{ qty: '180', unit: 'g', name: 'Cod fillet' }], notes: 'Gentle pan roast or butter poach.' },
+    { id: 'c-prot-14', name: 'Lamb Chop / Cutlet', time: 12, passive: 5, tags: ['Hot', 'Earthy'], dot: '#C4736A', ingredients: [{ qty: '2', unit: 'pcs', name: 'Lamb chop' }], notes: 'Pair with garlic and rosemary.' },
+    { id: 'c-prot-15', name: 'Turkey Breast', time: 20, passive: 0, tags: ['Hot'], dot: '#C4736A', ingredients: [{ qty: '200', unit: 'g', name: 'Turkey breast' }], notes: 'Sous-vide or roast.' },
+    { id: 'c-prot-16', name: 'Firm Tofu', time: 12, passive: 15, tags: ['Vegan'], dot: '#C4736A', ingredients: [{ qty: '200', unit: 'g', name: 'Firm tofu' }], notes: 'Press excess water before frying.' },
+    { id: 'c-prot-17', name: 'Soft-Boiled Hen Egg', time: 7, passive: 0, tags: ['Eggs', 'Vegetarian', 'Silky'], dot: '#C4736A', ingredients: [{ qty: '1', unit: 'pc', name: 'Hen egg' }], notes: '7-minute jammy yolk boil.' },
+    { id: 'c-prot-18', name: 'Red / Brown Lentils', time: 25, passive: 0, tags: ['Vegan', 'Earthy'], dot: '#C4736A', ingredients: [{ qty: '150', unit: 'g', name: 'Lentils' }], notes: 'Simmer until tender.' },
+    { id: 'c-prot-19', name: 'Chickpeas (Garbanzo)', time: 15, passive: 0, tags: ['Vegan', 'Nutty'], dot: '#C4736A', ingredients: [{ qty: '200', unit: 'g', name: 'Chickpeas' }], notes: 'Roast for crunch or simmer.' },
+    { id: 'c-prot-20', name: 'Black Beans', time: 20, passive: 0, tags: ['Vegan', 'Earthy'], dot: '#C4736A', ingredients: [{ qty: '200', unit: 'g', name: 'Black beans' }], notes: 'Season with cumin and garlic.' },
+
+    // ── 10 CURATED SPECIALTY PROTEINS ────────────────────────────────
+    { id: 'c-spec-1', name: 'A5 Wagyu Beef Striploin', time: 6, passive: 5, tags: ['Hot', 'Rich', 'Silky'], dot: '#C4736A', ingredients: [{ qty: '120', unit: 'g', name: 'A5 Wagyu' }], notes: 'High intramuscular fat; light sear only.' },
+    { id: 'c-spec-2', name: 'Duck Leg Confit', time: 15, passive: 240, tags: ['Hot', 'Rich', 'Crispy'], dot: '#C4736A', ingredients: [{ qty: '1', unit: 'leg', name: 'Duck leg' }, { qty: '200', unit: 'g', name: 'Duck fat' }], notes: 'Slow poach in fat, crisp skin in oven.' },
+    { id: 'c-spec-3', name: 'Seared Foie Gras', time: 4, passive: 0, tags: ['Hot', 'Rich', 'Silky'], dot: '#C4736A', ingredients: [{ qty: '60', unit: 'g', name: 'Foie gras slice' }], notes: 'Scored surface, screaming hot dry pan.' },
+    { id: 'c-spec-4', name: 'Spanish Jamón Ibérico', time: 0, passive: 0, tags: ['Nutty', 'Rich', 'Chilled'], dot: '#C4736A', ingredients: [{ qty: '30', unit: 'g', name: 'Jamón Ibérico' }], notes: 'Serve razor-thin at room temperature.' },
+    { id: 'c-spec-5', name: 'Guanciale (Cured Pork Cheek)', time: 10, passive: 0, tags: ['Crispy', 'Rich', 'Hot'], dot: '#C4736A', ingredients: [{ qty: '80', unit: 'g', name: 'Guanciale' }], notes: 'Essential fat base for Carbonara & Amatriciana.' },
+    { id: 'c-spec-6', name: 'Hokkaido Sea Scallops', time: 4, passive: 0, tags: ['Hot', 'Sweet', 'Silky'], dot: '#C4736A', ingredients: [{ qty: '3', unit: 'pcs', name: 'Sea scallops' }], notes: 'Hard sear on 1 side, baste with brown butter.' },
+    { id: 'c-spec-7', name: 'Uni (Fresh Sea Urchin)', time: 0, passive: 0, tags: ['Chilled', 'Silky'], dot: '#C4736A', ingredients: [{ qty: '30', unit: 'g', name: 'Uni' }], notes: 'Briny, sweet ocean flavor; delicate texture.' },
+    { id: 'c-spec-8', name: 'Charred Spanish Octopus', time: 15, passive: 90, tags: ['Hot', 'Smoky', 'Crispy'], dot: '#C4736A', ingredients: [{ qty: '150', unit: 'g', name: 'Octopus tentacle' }], notes: 'Tenderize by braising before high-heat grilling.' },
+    { id: 'c-spec-9', name: 'Sablefish (Black Cod)', time: 12, passive: 720, tags: ['Hot', 'Rich', 'Silky'], dot: '#C4736A', ingredients: [{ qty: '180', unit: 'g', name: 'Black cod' }], notes: 'High oil content; pairs exceptionally with sweet miso marination.' },
+    { id: 'c-spec-10', name: 'Tempeh', time: 10, passive: 0, tags: ['Vegan', 'Nutty', 'Earthy'], dot: '#C4736A', ingredients: [{ qty: '150', unit: 'g', name: 'Tempeh' }], notes: 'Fermented whole soybean block; shallow fry for crispness.' }
+  ]
+}
+        
       ]
     },
     PRIMARY: {
@@ -71,7 +132,7 @@ const SEED_STATE = {
       unfiled: [],
       folders: [
         {
-          id: 'f-primary-fruit', name: 'Fruit', collapsed: false, comps: [
+          id: 'f-primary-fruit', name: 'Fruit & Curds', collapsed: false, comps: [
             { id: 'c7', name: 'Mango Purée', time: 10, passive: 0, tags: ['Vegan', 'Tropical', 'Sweet'], dot: '#E8A020', ingredients: [{ qty: '500', unit: 'g', name: 'Fresh Mango' }], notes: '' },
             { id: 'c8', name: 'Lychee Compote', time: 15, passive: 0, tags: ['Vegan', 'Floral', 'Sweet'], dot: '#C4736A', ingredients: [], notes: '' },
             { id: 'c9', name: 'Yuzu Curd', time: 15, passive: 20, tags: ['Eggs', 'Dairy', 'Sour', 'Citric'], dot: '#EF9F27', ingredients: [{ qty: '100', unit: 'ml', name: 'Yuzu Juice' }, { qty: '3', unit: 'pcs', name: 'Eggs' }], notes: 'Cook over double boiler until thick.' },
@@ -79,8 +140,19 @@ const SEED_STATE = {
           ]
         },
         {
-          id: 'f-primary-chocolate', name: 'Chocolate', collapsed: false, comps: [
-            { id: 'c13', name: 'Dark Chocolate Ganache', time: 12, passive: 30, tags: ['Dairy', 'Bitter', 'Rich', 'Silky'], dot: '#2C2C2A', ingredients: [{ qty: '200', unit: 'g', name: '70% Dark Chocolate' }, { qty: '200', unit: 'ml', name: 'Cream' }], notes: 'Emulsify gently.' }
+          id: 'f-primary-sauces', name: 'Sauces, Curries & Braises', collapsed: false, comps: [
+            { id: 'c13', name: 'Dark Chocolate Ganache', time: 12, passive: 30, tags: ['Dairy', 'Bitter', 'Rich', 'Silky'], dot: '#2C2C2A', ingredients: [{ qty: '200', unit: 'g', name: '70% Dark Chocolate' }, { qty: '200', unit: 'ml', name: 'Cream' }], notes: 'Emulsify gently.' },
+            { id: 'c520', name: 'Classic Béchamel / Mornay', time: 15, passive: 0, tags: ['Dairy', 'Gluten'], dot: '#E8A020', ingredients: [{ qty: '500', unit: 'ml', name: 'Whole milk' }, { qty: '50', unit: 'g', name: 'Butter' }], notes: 'French Mother Sauce.' },
+            { id: 'c521', name: 'Slow-Cooked Ragù Bolognese', time: 30, passive: 180, tags: ['Dairy', 'Rich'], dot: '#E8A020', ingredients: [{ qty: '250', unit: 'g', name: 'Ground beef' }, { qty: '250', unit: 'g', name: 'Ground pork' }], notes: '' },
+            { id: 'c522', name: 'Red Curry Base', time: 15, passive: 30, tags: ['Spicy', 'Tropical'], dot: '#E8A020', ingredients: [{ qty: '100', unit: 'g', name: 'Red curry paste' }, { qty: '400', unit: 'ml', name: 'Coconut milk' }], notes: '' },
+            { id: 'c523', name: 'Mole Negro', time: 45, passive: 120, tags: ['Smoky', 'Bitter', 'Rich'], dot: '#E8A020', ingredients: [{ qty: '3', unit: 'type', name: 'Chipotle/Ancho/Guajillo' }], notes: 'Complex Mexican reduced sauce.' },
+            { id: 'c524', name: 'San Marzano Marinara', time: 10, passive: 45, tags: ['Vegan'], dot: '#E8A020', ingredients: [{ qty: '800', unit: 'g', name: 'San Marzano tomato' }], notes: '' }
+          ]
+        },
+        {
+          id: 'f-primary-cheeses', name: 'Cheeses & Purees', collapsed: false, comps: [
+            { id: 'c525', name: 'Burrata & Basil Oil', time: 5, passive: 0, tags: ['Dairy', 'Vegetarian', 'Silky'], dot: '#E8A020', ingredients: [{ qty: '1', unit: 'ball', name: 'Mozzarella di bufala / Burrata' }], notes: '' },
+            { id: 'c526', name: 'Roasted Butternut Squash Puree', time: 15, passive: 40, tags: ['Vegan', 'Earthy'], dot: '#E8A020', ingredients: [{ qty: '1', unit: 'pc', name: 'Butternut squash' }], notes: '' }
           ]
         }
       ]
@@ -90,9 +162,18 @@ const SEED_STATE = {
       unfiled: [],
       folders: [
         {
-          id: 'f-secondary-floral', name: 'Floral', collapsed: false, comps: [
+          id: 'f-secondary-floral', name: 'Infusions & Syrups', collapsed: false, comps: [
             { id: 'c15', name: 'Jasmine Tea Infusion', time: 5, passive: 15, tags: ['Vegan', 'Floral', 'Hot'], dot: '#6B8F71', ingredients: [{ qty: '10', unit: 'g', name: 'Jasmine Green Tea' }], notes: '' },
             { id: 'c16', name: 'Smoked Hibiscus Syrup', time: 20, passive: 30, tags: ['Vegan', 'Floral', 'Smoky', 'Tangy'], dot: '#C4736A', ingredients: [{ qty: '50', unit: 'g', name: 'Dried Hibiscus' }, { qty: '200', unit: 'g', name: 'Sugar' }], notes: 'Infuse wood smoke prior to strain.' }
+          ]
+        },
+        {
+          id: 'f-secondary-condiments', name: 'Oils, Emulsions & Condiments', collapsed: false, comps: [
+            { id: 'c530', name: 'Garlic Aïoli / Toum', time: 10, passive: 0, tags: ['Eggs', 'Tangy'], dot: '#6B8F71', ingredients: [{ qty: '4', unit: 'cloves', name: 'Garlic' }, { qty: '1', unit: 'pc', name: 'Egg yolk' }], notes: '' },
+            { id: 'c531', name: 'Chili Crisp & Sesame Oil', time: 15, passive: 15, tags: ['Vegan', 'Spicy', 'Smoky'], dot: '#6B8F71', ingredients: [{ qty: '50', unit: 'g', name: 'Gochugaru' }, { qty: '100', unit: 'ml', name: 'Neutral oil' }], notes: '' },
+            { id: 'c532', name: 'Chimichurri Salsa', time: 10, passive: 0, tags: ['Vegan', 'Tangy'], dot: '#6B8F71', ingredients: [{ qty: '1', unit: 'bunch', name: 'Flat-leaf parsley' }, { qty: '30', unit: 'ml', name: 'Red wine vinegar' }], notes: '' },
+            { id: 'c533', name: 'Pesto Genovese', time: 10, passive: 0, tags: ['Dairy', 'Tree Nuts', 'Vegetarian'], dot: '#6B8F71', ingredients: [{ qty: '2', unit: 'cups', name: 'Italian basil' }, { qty: '50', unit: 'g', name: 'Parmigiano-Reggiano' }], notes: '' },
+            { id: 'c534', name: 'Aged Balsamic Reduction', time: 5, passive: 20, tags: ['Vegan', 'Sweet', 'Tangy'], dot: '#6B8F71', ingredients: [{ qty: '100', unit: 'ml', name: 'Balsamic vinegar' }], notes: '' }
           ]
         }
       ]
@@ -102,8 +183,12 @@ const SEED_STATE = {
       unfiled: [],
       folders: [
         {
-          id: 'f-texture-crunch', name: 'Crunch', collapsed: false, comps: [
-            { id: 'c20', name: 'Toasted Almond Praline', time: 20, passive: 10, tags: ['Tree Nuts', 'Nutty', 'Crispy'], dot: '#E8A020', ingredients: [{ qty: '150', unit: 'g', name: 'Almonds' }, { qty: '100', unit: 'g', name: 'Caramelized Sugar' }], notes: 'Crush finely in food processor.' }
+          id: 'f-texture-crunch', name: 'Crunch & Nuts', collapsed: false, comps: [
+            { id: 'c20', name: 'Toasted Almond Praline', time: 20, passive: 10, tags: ['Tree Nuts', 'Nutty', 'Crispy'], dot: '#E8A020', ingredients: [{ qty: '150', unit: 'g', name: 'Almonds' }, { qty: '100', unit: 'g', name: 'Caramelized Sugar' }], notes: 'Crush finely in food processor.' },
+            { id: 'c540', name: 'Toasted Sesame Furikake', time: 5, passive: 0, tags: ['Sesame', 'Crispy', 'Earthy'], dot: '#888780', ingredients: [{ qty: '2', unit: 'tbsp', name: 'Toasted sesame seeds' }, { qty: '1', unit: 'sheet', name: 'Nori' }], notes: '' },
+            { id: 'c541', name: 'Crispy Pancetta Crumbles', time: 10, passive: 0, tags: ['Crispy', 'Rich'], dot: '#888780', ingredients: [{ qty: '100', unit: 'g', name: 'Pancetta' }], notes: 'Render in skillet.' },
+            { id: 'c542', name: 'Fried Shallot Crickets', time: 8, passive: 0, tags: ['Vegan', 'Crispy'], dot: '#888780', ingredients: [{ qty: '2', unit: 'pcs', name: 'Shallot' }], notes: 'Flash fry in neutral oil.' },
+            { id: 'c543', name: 'Maldon Sea Salt & Microgreens', time: 2, passive: 0, tags: ['Vegan', 'Crispy'], dot: '#888780', ingredients: [{ qty: '1', unit: 'pinch', name: 'Maldon sea salt' }], notes: '' }
           ]
         }
       ]
@@ -111,7 +196,7 @@ const SEED_STATE = {
   },
   assembly: { BASE: [], PRIMARY: [], SECONDARY: [], TEXTURE: [] },
   savedRecipes: [],
-  nextId: 500
+  nextId: 600
 };
 
 export default function App() {
