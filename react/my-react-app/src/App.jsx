@@ -59,23 +59,18 @@ const SEED_STATE = {
           ]
         },
         {
-          id: 'f-base-doughs', name: 'Doughs & Breads', collapsed: false, comps: [
-            { id: 'c4', name: 'Pâte Sucrée', time: 30, passive: 60, tags: ['Dairy', 'Gluten', 'Sweet'], dot: '#E8A020', ingredients: [{ qty: '200', unit: 'g', name: 'Flour' }, { qty: '100', unit: 'g', name: 'Butter' }], notes: 'Keep dough cold while rolling.' },
-            { id: 'c5', name: 'Choux Pastry', time: 25, passive: 20, tags: ['Dairy', 'Gluten', 'Eggs'], dot: '#EF9F27', ingredients: [], notes: '' },
-            { id: 'c500', name: 'Sourdough Baguette', time: 45, passive: 720, tags: ['Gluten', 'Crispy'], dot: '#C4736A', ingredients: [{ qty: '500', unit: 'g', name: 'Bread flour' }], notes: 'Long cold proof.' },
-            { id: 'c501', name: 'Brioche Bun', time: 30, passive: 180, tags: ['Dairy', 'Gluten', 'Eggs'], dot: '#C4736A', ingredients: [{ qty: '250', unit: 'g', name: '00 flour' }], notes: '' },
-            { id: 'c502', name: 'Naan / Pita Dough', time: 20, passive: 60, tags: ['Gluten'], dot: '#C4736A', ingredients: [], notes: '' },
-            { id: 'c503', name: 'Fresh Pasta Dough (Egg)', time: 30, passive: 30, tags: ['Gluten', 'Eggs'], dot: '#C4736A', ingredients: [], notes: 'Semolina & 00 Flour mix.' }
-          ]
+          id: 'f-base-handhelds',
+      name: 'Wraps & Handhelds',
+      collapsed: false,
+      comps: [
+        { id: 'c-v-1', name: 'Taco Shell / Tortilla', time: 5, passive: 0, tags: ['Gluten-Free'], dot: '#C4736A', ingredients: [], notes: 'Soft corn or flour tortilla format.' },
+        { id: 'c-v-2', name: 'Burrito / Stuffed Wrap', time: 5, passive: 0, tags: ['Gluten'], dot: '#C4736A', ingredients: [], notes: 'Large flour tortilla or flatbread.' },
+        { id: 'c-v-3', name: 'Sandwich / Bun / Roll', time: 5, passive: 0, tags: ['Gluten'], dot: '#C4736A', ingredients: [], notes: 'Brioche, sourdough baguette, or ciabatta base.' },
+        { id: 'c-v-4', name: 'Pita Pocket / Flatbread', time: 5, passive: 0, tags: ['Gluten'], dot: '#C4736A', ingredients: [], notes: 'Naan, pita, or lavash fold.' },
+        { id: 'c-v-5', name: 'Spring Roll / Summer Roll Wrap', time: 10, passive: 0, tags: ['Vegan', 'Gluten-Free'], dot: '#C4736A', ingredients: [], notes: 'Rice paper or crisp wrapper.' }
+      ]
         },
-        {
-          id: 'f-base-grains', name: 'Rice, Grains & Starches', collapsed: false, comps: [
-            { id: 'c504', name: 'Steamed Jasmine Rice', time: 5, passive: 20, tags: ['Vegan'], dot: '#C4736A', ingredients: [{ qty: '200', unit: 'g', name: 'Jasmine rice' }], notes: '' },
-            { id: 'c505', name: 'Seasoned Sushi Rice', time: 10, passive: 25, tags: ['Vegan'], dot: '#C4736A', ingredients: [{ qty: '300', unit: 'g', name: 'Sushi rice' }, { qty: '30', unit: 'ml', name: 'Rice wine vinegar' }], notes: '' },
-            { id: 'c506', name: 'Arborio Risotto Base', time: 25, passive: 0, tags: ['Vegetarian', 'Dairy'], dot: '#C4736A', ingredients: [{ qty: '200', unit: 'g', name: 'Arborio rice' }, { qty: '50', unit: 'g', name: 'Parmigiano-Reggiano' }], notes: '' },
-            { id: 'c507', name: 'Creamy Polenta / Grits', time: 30, passive: 0, tags: ['Vegetarian', 'Dairy'], dot: '#C4736A', ingredients: [], notes: '' }
-          ]
-        },
+        
         {
           id: 'f-base-proteins', name: 'Proteins & Main Seared Cuts', collapsed: false, comps: [
             { id: 'c508', name: 'Seared Ribeye Steak', time: 15, passive: 10, tags: ['Rich', 'Hot'], dot: '#C4736A', ingredients: [{ qty: '1', unit: 'cut', name: 'Ribeye' }], notes: 'Cast iron sear finish.' },
