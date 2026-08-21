@@ -91,7 +91,7 @@ const SEED_STATE = {
       ]
     },
         
-        {
+       /* {
           id: 'f-base-proteins', name: 'Proteins & Main Seared Cuts', collapsed: false, comps: [
             { id: 'c508', name: 'Seared Ribeye Steak', time: 15, passive: 10, tags: ['Rich', 'Hot'], dot: '#C4736A', ingredients: [{ qty: '1', unit: 'cut', name: 'Ribeye' }], notes: 'Cast iron sear finish.' },
             { id: 'c509', name: 'Crispy Skin Salmon Fillet', time: 10, passive: 0, tags: ['Hot'], dot: '#C4736A', ingredients: [{ qty: '200', unit: 'g', name: 'Salmon fillet' }], notes: '' },
@@ -138,7 +138,7 @@ const SEED_STATE = {
     { id: 'c-spec-9', name: 'Sablefish (Black Cod)', time: 12, passive: 720, tags: ['Hot', 'Rich', 'Silky'], dot: '#C4736A', ingredients: [{ qty: '180', unit: 'g', name: 'Black cod' }], notes: 'High oil content; pairs exceptionally with sweet miso marination.' },
     { id: 'c-spec-10', name: 'Tempeh', time: 10, passive: 0, tags: ['Vegan', 'Nutty', 'Earthy'], dot: '#C4736A', ingredients: [{ qty: '150', unit: 'g', name: 'Tempeh' }], notes: 'Fermented whole soybean block; shallow fry for crispness.' }
   ]
-}
+}*/
         
       ]
     },
