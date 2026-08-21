@@ -69,7 +69,27 @@ const SEED_STATE = {
         { id: 'c-v-4', name: 'Pita Pocket / Flatbread', time: 5, passive: 0, tags: ['Gluten'], dot: '#C4736A', ingredients: [], notes: 'Naan, pita, or lavash fold.' },
         { id: 'c-v-5', name: 'Spring Roll / Summer Roll Wrap', time: 10, passive: 0, tags: ['Vegan', 'Gluten-Free'], dot: '#C4736A', ingredients: [], notes: 'Rice paper or crisp wrapper.' }
       ]
-        },
+        },{
+      id: 'f-base-bowls-plates',
+      name: 'Rice, Grain & Noodle Dishes',
+      collapsed: false,
+      comps: [
+        { id: 'c-v-6', name: 'Plated Pasta Format', time: 15, passive: 0, tags: ['Gluten'], dot: '#C4736A', ingredients: [], notes: 'Fresh egg pasta, ramen, or udon base.' },
+        { id: 'c-v-7', name: 'Biryani / Layered Rice Bowl', time: 25, passive: 15, tags: ['Gluten-Free'], dot: '#C4736A', ingredients: [], notes: 'Spiced rice base format.' },
+        { id: 'c-v-8', name: 'Risotto / Creamy Grain Base', time: 25, passive: 0, tags: ['Gluten-Free', 'Dairy'], dot: '#C4736A', ingredients: [], notes: 'Arborio, polenta, or grits bowl.' },
+        { id: 'c-v-9', name: 'Donburi / Seasoned Rice Bowl', time: 10, passive: 0, tags: ['Gluten-Free'], dot: '#C4736A', ingredients: [], notes: 'Sushi rice or jasmine rice format.' }
+      ]
+    },
+    {
+      id: 'f-base-soups-stews',
+      name: 'Soups, Broths & Braises',
+      collapsed: false,
+      comps: [
+        { id: 'c-v-10', name: 'Ramen / Noodle Soup Bowl', time: 20, passive: 0, tags: ['Hot'], dot: '#C4736A', ingredients: [], notes: 'Broth and noodle vehicle.' },
+        { id: 'c-v-11', name: 'Stew / Curry Vessel', time: 20, passive: 0, tags: ['Hot'], dot: '#C4736A', ingredients: [], notes: 'Deep plate or bowl format.' },
+        { id: 'c-v-12', name: 'Chowder / Bisque Vessel', time: 15, passive: 0, tags: ['Dairy', 'Hot'], dot: '#C4736A', ingredients: [], notes: 'Rich soup vessel format.' }
+      ]
+    },
         
         {
           id: 'f-base-proteins', name: 'Proteins & Main Seared Cuts', collapsed: false, comps: [
