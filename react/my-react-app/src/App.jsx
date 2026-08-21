@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import './App.css';
 
 // ── CONSTANTS & SEED DATA ─────────────────────────────────────────────────────
-const STORAGE_KEY = 'culinaryEngineState';
+const STORAGE_KEY = 'culinaryEngineState_v5';
 const ROLES = [
   { id: 'BASE', label: 'Base vehicles', color: '#C4736A' },
   { id: 'PRIMARY', label: 'Primary flavors', color: '#E8A020' },
