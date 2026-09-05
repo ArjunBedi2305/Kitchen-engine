@@ -1,32 +1,53 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import './App.css';
 
-// ── CONSTANTS & SEED DATA ─────────────────────────────────────────────────────
-const STORAGE_KEY = 'culinaryEngineState_v5';
+// ── PALETTE DEFINITIONS & CONSTANTS ──────────────────────────────────────────
+const PALETTE = {
+  BASE: '#C4736A',      // Terracotta
+  ENHANCER: '#E8A020',  // Warm Amber
+  AROMATIC: '#6B8F71',  // Sage Green
+  TEXTURE: '#888780',   // Slate Gray
+  MUTED: '#9C9A96',     // Muted Gray
+  DARK: '#2C2C2A',      // Charcoal
+  ACCENT: '#D4537E',    // Crimson
+  HIGHLIGHT: '#FAC775'  // Cream
+};
+
+const STORAGE_KEY = 'culinaryEngineState_v6';
+
 const ROLES = [
-  { id: 'BASE', label: 'Base vehicles', color: '#C4736A' },
-  { id: 'PRIMARY', label: 'Primary flavors', color: '#E8A020' },
-  { id: 'SECONDARY', label: 'Secondary / aromatic', color: '#6B8F71' },
-  { id: 'TEXTURE', label: 'Textures', color: '#888780' },
+  { id: 'BASE', label: 'Base vehicles', color: PALETTE.BASE },
+  { id: 'ENHANCER', label: 'Flavor enhancers & sauces', color: PALETTE.ENHANCER },
+  { id: 'AROMATIC', label: 'Aromatics & accents', color: PALETTE.AROMATIC },
+  { id: 'TEXTURE', label: 'Textures & finishes', color: PALETTE.TEXTURE },
 ];
-const ROLE_DOTS = { BASE: '#C4736A', PRIMARY: '#E8A020', SECONDARY: '#6B8F71', TEXTURE: '#888780' };
-const SLOT_MAXES = { BASE: 1, PRIMARY: 3, SECONDARY: 3, TEXTURE: 3 };
+
+const ROLE_DOTS = {
+  BASE: PALETTE.BASE,
+  ENHANCER: PALETTE.ENHANCER,
+  AROMATIC: PALETTE.AROMATIC,
+  TEXTURE: PALETTE.TEXTURE,
+};
+
+const SLOT_MAXES = { BASE: 1, ENHANCER: 3, AROMATIC: 3, TEXTURE: 3 };
+
 const ALLERGENS = ['Dairy', 'Gluten', 'Tree Nuts', 'Eggs', 'Sesame', 'Soy', 'Peanuts', 'Shellfish'];
-const PREDEFINED_TAGS = ['Dairy', 'Gluten', 'Tree Nuts', 'Eggs', 'Sesame', 'Soy', 'Vegan', 'Vegetarian', 'Sweet', 'Sour', 'Bitter', 'Floral', 'Smoky', 'Tangy', 'Crispy', 'Silky', 'Chilled', 'Hot', 'Earthy'];
+const FLAVOR_TAGS = ['Sweet', 'Sour', 'Bitter', 'Floral', 'Smoky', 'Tangy', 'Earthy', 'Spicy', 'Rich', 'Citric', 'Tropical', 'Nutty'];
+const PREDEFINED_TAGS = [...ALLERGENS, ...FLAVOR_TAGS, 'Vegan', 'Vegetarian', 'Gluten-Free', 'Crispy', 'Silky', 'Chilled', 'Hot'];
 
 const SEED_RECIPES = [
   {
     id: 'seed-1',
     title: 'Smoked Hibiscus Yuzu Cheesecake Base with Dark Chocolate Ganache',
-    tags: ['Dairy', 'Gluten', 'Eggs', 'Floral', 'Smoky', 'Tangy', 'Bitter'],
+    tags: ['Dairy', 'Gluten', 'Eggs', 'Floral', 'Smoky', 'Tangy', 'Bitter', 'Sweet'],
     cat: 'DESSERT',
     bcg: 'STAR',
     chefNotes: 'Ensure the Yuzu curd is emulsified before adding to the ganache layer.',
     components: [
       { id: 'c1', role: 'BASE' },
-      { id: 'c9', role: 'PRIMARY' },
-      { id: 'c13', role: 'PRIMARY' },
-      { id: 'c16', role: 'SECONDARY' }
+      { id: 'c9', role: 'ENHANCER' },
+      { id: 'c13', role: 'ENHANCER' },
+      { id: 'c16', role: 'AROMATIC' }
     ]
   },
   {
@@ -38,8 +59,8 @@ const SEED_RECIPES = [
     chefNotes: 'Bake crust until lightly golden brown. Dust with almond powder while hot.',
     components: [
       { id: 'c4', role: 'BASE' },
-      { id: 'c7', role: 'PRIMARY' },
-      { id: 'c15', role: 'SECONDARY' },
+      { id: 'c7', role: 'ENHANCER' },
+      { id: 'c15', role: 'AROMATIC' },
       { id: 'c20', role: 'TEXTURE' }
     ]
   },
@@ -53,144 +74,89 @@ const SEED_STATE = {
       folders: [
         {
           id: 'f-base-custards', name: 'Custards', collapsed: false, comps: [
-            { id: 'c1', name: 'Cheesecake Base', time: 20, passive: 180, tags: ['Dairy', 'Gluten', 'Sweet', 'Chilled'], dot: '#C4736A', ingredients: [{ qty: '250', unit: 'g', name: 'Cream Cheese' }, { qty: '100', unit: 'g', name: 'Sugar' }, { qty: '2', unit: 'pcs', name: 'Eggs' }], notes: 'Bake in water bath.' },
-            { id: 'c2', name: 'Vanilla Panna Cotta', time: 10, passive: 240, tags: ['Dairy', 'Sweet', 'Silky'], dot: '#FAC775', ingredients: [{ qty: '300', unit: 'ml', name: 'Heavy Cream' }, { qty: '1', unit: 'tsp', name: 'Vanilla Bean Paste' }], notes: 'Set with gelatin.' },
-            { id: 'c3', name: 'Crème Brûlée Base', time: 15, passive: 60, tags: ['Dairy', 'Eggs', 'Sweet', 'Rich'], dot: '#E8A020', ingredients: [{ qty: '4', unit: 'yolks', name: 'Egg Yolks' }], notes: '' }
+            { id: 'c1', name: 'Cheesecake Base', time: 20, passive: 180, tags: ['Dairy', 'Gluten', 'Sweet', 'Chilled'], dot: PALETTE.BASE, ingredients: [{ qty: '250', unit: 'g', name: 'Cream Cheese' }, { qty: '100', unit: 'g', name: 'Sugar' }, { qty: '2', unit: 'pcs', name: 'Eggs' }], notes: 'Bake in water bath.' },
+            { id: 'c2', name: 'Vanilla Panna Cotta', time: 10, passive: 240, tags: ['Dairy', 'Sweet', 'Silky'], dot: PALETTE.HIGHLIGHT, ingredients: [{ qty: '300', unit: 'ml', name: 'Heavy Cream' }, { qty: '1', unit: 'tsp', name: 'Vanilla Bean Paste' }], notes: 'Set with gelatin.' },
+            { id: 'c3', name: 'Crème Brûlée Base', time: 15, passive: 60, tags: ['Dairy', 'Eggs', 'Sweet', 'Rich'], dot: PALETTE.ENHANCER, ingredients: [{ qty: '4', unit: 'yolks', name: 'Egg Yolks' }], notes: '' }
           ]
         },
         {
-          id: 'f-base-handhelds',
-      name: 'Wraps & Handhelds',
-      collapsed: false,
-      comps: [
-        { id: 'c-v-1', name: 'Taco Shell / Tortilla', time: 5, passive: 0, tags: ['Gluten-Free'], dot: '#C4736A', ingredients: [], notes: 'Soft corn or flour tortilla format.' },
-        { id: 'c-v-2', name: 'Burrito / Stuffed Wrap', time: 5, passive: 0, tags: ['Gluten'], dot: '#C4736A', ingredients: [], notes: 'Large flour tortilla or flatbread.' },
-        { id: 'c-v-3', name: 'Sandwich / Bun / Roll', time: 5, passive: 0, tags: ['Gluten'], dot: '#C4736A', ingredients: [], notes: 'Brioche, sourdough baguette, or ciabatta base.' },
-        { id: 'c-v-4', name: 'Pita Pocket / Flatbread', time: 5, passive: 0, tags: ['Gluten'], dot: '#C4736A', ingredients: [], notes: 'Naan, pita, or lavash fold.' },
-        { id: 'c-v-5', name: 'Spring Roll / Summer Roll Wrap', time: 10, passive: 0, tags: ['Vegan', 'Gluten-Free'], dot: '#C4736A', ingredients: [], notes: 'Rice paper or crisp wrapper.' }
-      ]
-        },{
-      id: 'f-base-bowls-plates',
-      name: 'Rice, Grain & Noodle Dishes',
-      collapsed: false,
-      comps: [
-        { id: 'c-v-6', name: 'Plated Pasta Format', time: 15, passive: 0, tags: ['Gluten'], dot: '#C4736A', ingredients: [], notes: 'Fresh egg pasta, ramen, or udon base.' },
-        { id: 'c-v-7', name: 'Biryani / Layered Rice Bowl', time: 25, passive: 15, tags: ['Gluten-Free'], dot: '#C4736A', ingredients: [], notes: 'Spiced rice base format.' },
-        { id: 'c-v-8', name: 'Risotto / Creamy Grain Base', time: 25, passive: 0, tags: ['Gluten-Free', 'Dairy'], dot: '#C4736A', ingredients: [], notes: 'Arborio, polenta, or grits bowl.' },
-        { id: 'c-v-9', name: 'Donburi / Seasoned Rice Bowl', time: 10, passive: 0, tags: ['Gluten-Free'], dot: '#C4736A', ingredients: [], notes: 'Sushi rice or jasmine rice format.' }
-      ]
-    },
-    {
-      id: 'f-base-soups-stews',
-      name: 'Soups, Broths & Braises',
-      collapsed: false,
-      comps: [
-        { id: 'c-v-10', name: 'Ramen / Noodle Soup Bowl', time: 20, passive: 0, tags: ['Hot'], dot: '#C4736A', ingredients: [], notes: 'Broth and noodle vehicle.' },
-        { id: 'c-v-11', name: 'Stew / Curry Vessel', time: 20, passive: 0, tags: ['Hot'], dot: '#C4736A', ingredients: [], notes: 'Deep plate or bowl format.' },
-        { id: 'c-v-12', name: 'Chowder / Bisque Vessel', time: 15, passive: 0, tags: ['Dairy', 'Hot'], dot: '#C4736A', ingredients: [], notes: 'Rich soup vessel format.' }
-      ]
-    },
-        
-       /* {
-          id: 'f-base-proteins', name: 'Proteins & Main Seared Cuts', collapsed: false, comps: [
-            { id: 'c508', name: 'Seared Ribeye Steak', time: 15, passive: 10, tags: ['Rich', 'Hot'], dot: '#C4736A', ingredients: [{ qty: '1', unit: 'cut', name: 'Ribeye' }], notes: 'Cast iron sear finish.' },
-            { id: 'c509', name: 'Crispy Skin Salmon Fillet', time: 10, passive: 0, tags: ['Hot'], dot: '#C4736A', ingredients: [{ qty: '200', unit: 'g', name: 'Salmon fillet' }], notes: '' },
-            { id: 'c510', name: 'Sous Vide Duck Breast', time: 15, passive: 90, tags: ['Rich'], dot: '#C4736A', ingredients: [{ qty: '1', unit: 'pc', name: 'Duck breast' }], notes: 'Score skin prior to pan roast.' },
-            { id: 'c511', name: 'Seared Pan-Tofu', time: 12, passive: 0, tags: ['Vegan'], dot: '#C4736A', ingredients: [{ qty: '200', unit: 'g', name: 'Firm tofu' }], notes: '' }
+          id: 'f-base-handhelds', name: 'Wraps & Handhelds', collapsed: false, comps: [
+            { id: 'c-v-1', name: 'Taco Shell / Tortilla', time: 5, passive: 0, tags: ['Gluten-Free'], dot: PALETTE.BASE, ingredients: [], notes: 'Soft corn or flour tortilla format.' },
+            { id: 'c-v-2', name: 'Burrito / Stuffed Wrap', time: 5, passive: 0, tags: ['Gluten'], dot: PALETTE.BASE, ingredients: [], notes: 'Large flour tortilla or flatbread.' },
+            { id: 'c-v-3', name: 'Sandwich / Bun / Roll', time: 5, passive: 0, tags: ['Gluten'], dot: PALETTE.BASE, ingredients: [], notes: 'Brioche, sourdough baguette, or ciabatta base.' },
+            { id: 'c-v-4', name: 'Pita Pocket / Flatbread', time: 5, passive: 0, tags: ['Gluten'], dot: PALETTE.BASE, ingredients: [], notes: 'Naan, pita, or lavash fold.' },
+            { id: 'c-v-5', name: 'Spring Roll / Summer Roll Wrap', time: 10, passive: 0, tags: ['Vegan', 'Gluten-Free'], dot: PALETTE.BASE, ingredients: [], notes: 'Rice paper or crisp wrapper.' }
           ]
         },
         {
-  id: 'f-base-proteins-expanded',
-  name: 'Proteins (Common & Specialty)',
-  collapsed: false,
-  comps: [
-    // ── 20 COMMON PROTEINS ───────────────────────────────────────────
-    { id: 'c-prot-1', name: 'Chicken Breast', time: 15, passive: 0, tags: ['Hot'], dot: '#C4736A', ingredients: [{ qty: '200', unit: 'g', name: 'Chicken breast' }], notes: 'Pan sear or grill.' },
-    { id: 'c-prot-2', name: 'Chicken Thigh (Boneless)', time: 20, passive: 0, tags: ['Hot', 'Rich'], dot: '#C4736A', ingredients: [{ qty: '200', unit: 'g', name: 'Chicken thigh' }], notes: 'High moisture retention.' },
-    { id: 'c-prot-3', name: 'Ground Beef (80/20)', time: 12, passive: 0, tags: ['Hot', 'Rich'], dot: '#C4736A', ingredients: [{ qty: '200', unit: 'g', name: 'Ground beef' }], notes: 'Ideal for smash patties or ragù.' },
-    { id: 'c-prot-4', name: 'Beef Chuck Roast', time: 25, passive: 180, tags: ['Hot', 'Rich'], dot: '#C4736A', ingredients: [{ qty: '500', unit: 'g', name: 'Chuck roast' }], notes: 'Braised low and slow.' },
-    { id: 'c-prot-5', name: 'Ribeye Steak', time: 15, passive: 10, tags: ['Hot', 'Rich'], dot: '#C4736A', ingredients: [{ qty: '1', unit: 'cut', name: 'Ribeye' }], notes: 'Cast iron finish.' },
-    { id: 'c-prot-6', name: 'Pork Chops', time: 15, passive: 0, tags: ['Hot'], dot: '#C4736A', ingredients: [{ qty: '1', unit: 'cut', name: 'Pork chop' }], notes: 'Brine prior to searing.' },
-    { id: 'c-prot-7', name: 'Pork Shoulder / Butt', time: 30, passive: 360, tags: ['Hot', 'Rich', 'Smoky'], dot: '#C4736A', ingredients: [{ qty: '1', unit: 'kg', name: 'Pork shoulder' }], notes: 'Slow roast or smoke for pulled pork.' },
-    { id: 'c-prot-8', name: 'Pork Belly', time: 30, passive: 120, tags: ['Hot', 'Rich', 'Crispy'], dot: '#C4736A', ingredients: [{ qty: '400', unit: 'g', name: 'Pork belly' }], notes: 'Score skin for crackling.' },
-    { id: 'c-prot-9', name: 'Bacon / Strip Bacon', time: 8, passive: 0, tags: ['Crispy', 'Smoky', 'Rich'], dot: '#C4736A', ingredients: [{ qty: '4', unit: 'slices', name: 'Bacon' }], notes: 'Render fat slowly.' },
-    { id: 'c-prot-10', name: 'Salmon Fillet', time: 12, passive: 0, tags: ['Hot'], dot: '#C4736A', ingredients: [{ qty: '200', unit: 'g', name: 'Salmon fillet' }], notes: 'Sear skin-side down first.' },
-    { id: 'c-prot-11', name: 'Jumbo Shrimp / Prawns', time: 6, passive: 0, tags: ['Shellfish', 'Hot'], dot: '#C4736A', ingredients: [{ qty: '150', unit: 'g', name: 'Shrimp' }], notes: 'Quick flash sear or poach.' },
-    { id: 'c-prot-12', name: 'Canned / Fresh Tuna Loin', time: 8, passive: 0, tags: ['Hot'], dot: '#C4736A', ingredients: [{ qty: '150', unit: 'g', name: 'Tuna loin' }], notes: 'High heat sear exterior only.' },
-    { id: 'c-prot-13', name: 'Cod Fillet', time: 10, passive: 0, tags: ['Hot', 'Silky'], dot: '#C4736A', ingredients: [{ qty: '180', unit: 'g', name: 'Cod fillet' }], notes: 'Gentle pan roast or butter poach.' },
-    { id: 'c-prot-14', name: 'Lamb Chop / Cutlet', time: 12, passive: 5, tags: ['Hot', 'Earthy'], dot: '#C4736A', ingredients: [{ qty: '2', unit: 'pcs', name: 'Lamb chop' }], notes: 'Pair with garlic and rosemary.' },
-    { id: 'c-prot-15', name: 'Turkey Breast', time: 20, passive: 0, tags: ['Hot'], dot: '#C4736A', ingredients: [{ qty: '200', unit: 'g', name: 'Turkey breast' }], notes: 'Sous-vide or roast.' },
-    { id: 'c-prot-16', name: 'Firm Tofu', time: 12, passive: 15, tags: ['Vegan'], dot: '#C4736A', ingredients: [{ qty: '200', unit: 'g', name: 'Firm tofu' }], notes: 'Press excess water before frying.' },
-    { id: 'c-prot-17', name: 'Soft-Boiled Hen Egg', time: 7, passive: 0, tags: ['Eggs', 'Vegetarian', 'Silky'], dot: '#C4736A', ingredients: [{ qty: '1', unit: 'pc', name: 'Hen egg' }], notes: '7-minute jammy yolk boil.' },
-    { id: 'c-prot-18', name: 'Red / Brown Lentils', time: 25, passive: 0, tags: ['Vegan', 'Earthy'], dot: '#C4736A', ingredients: [{ qty: '150', unit: 'g', name: 'Lentils' }], notes: 'Simmer until tender.' },
-    { id: 'c-prot-19', name: 'Chickpeas (Garbanzo)', time: 15, passive: 0, tags: ['Vegan', 'Nutty'], dot: '#C4736A', ingredients: [{ qty: '200', unit: 'g', name: 'Chickpeas' }], notes: 'Roast for crunch or simmer.' },
-    { id: 'c-prot-20', name: 'Black Beans', time: 20, passive: 0, tags: ['Vegan', 'Earthy'], dot: '#C4736A', ingredients: [{ qty: '200', unit: 'g', name: 'Black beans' }], notes: 'Season with cumin and garlic.' },
-
-    // ── 10 CURATED SPECIALTY PROTEINS ────────────────────────────────
-    { id: 'c-spec-1', name: 'A5 Wagyu Beef Striploin', time: 6, passive: 5, tags: ['Hot', 'Rich', 'Silky'], dot: '#C4736A', ingredients: [{ qty: '120', unit: 'g', name: 'A5 Wagyu' }], notes: 'High intramuscular fat; light sear only.' },
-    { id: 'c-spec-2', name: 'Duck Leg Confit', time: 15, passive: 240, tags: ['Hot', 'Rich', 'Crispy'], dot: '#C4736A', ingredients: [{ qty: '1', unit: 'leg', name: 'Duck leg' }, { qty: '200', unit: 'g', name: 'Duck fat' }], notes: 'Slow poach in fat, crisp skin in oven.' },
-    { id: 'c-spec-3', name: 'Seared Foie Gras', time: 4, passive: 0, tags: ['Hot', 'Rich', 'Silky'], dot: '#C4736A', ingredients: [{ qty: '60', unit: 'g', name: 'Foie gras slice' }], notes: 'Scored surface, screaming hot dry pan.' },
-    { id: 'c-spec-4', name: 'Spanish Jamón Ibérico', time: 0, passive: 0, tags: ['Nutty', 'Rich', 'Chilled'], dot: '#C4736A', ingredients: [{ qty: '30', unit: 'g', name: 'Jamón Ibérico' }], notes: 'Serve razor-thin at room temperature.' },
-    { id: 'c-spec-5', name: 'Guanciale (Cured Pork Cheek)', time: 10, passive: 0, tags: ['Crispy', 'Rich', 'Hot'], dot: '#C4736A', ingredients: [{ qty: '80', unit: 'g', name: 'Guanciale' }], notes: 'Essential fat base for Carbonara & Amatriciana.' },
-    { id: 'c-spec-6', name: 'Hokkaido Sea Scallops', time: 4, passive: 0, tags: ['Hot', 'Sweet', 'Silky'], dot: '#C4736A', ingredients: [{ qty: '3', unit: 'pcs', name: 'Sea scallops' }], notes: 'Hard sear on 1 side, baste with brown butter.' },
-    { id: 'c-spec-7', name: 'Uni (Fresh Sea Urchin)', time: 0, passive: 0, tags: ['Chilled', 'Silky'], dot: '#C4736A', ingredients: [{ qty: '30', unit: 'g', name: 'Uni' }], notes: 'Briny, sweet ocean flavor; delicate texture.' },
-    { id: 'c-spec-8', name: 'Charred Spanish Octopus', time: 15, passive: 90, tags: ['Hot', 'Smoky', 'Crispy'], dot: '#C4736A', ingredients: [{ qty: '150', unit: 'g', name: 'Octopus tentacle' }], notes: 'Tenderize by braising before high-heat grilling.' },
-    { id: 'c-spec-9', name: 'Sablefish (Black Cod)', time: 12, passive: 720, tags: ['Hot', 'Rich', 'Silky'], dot: '#C4736A', ingredients: [{ qty: '180', unit: 'g', name: 'Black cod' }], notes: 'High oil content; pairs exceptionally with sweet miso marination.' },
-    { id: 'c-spec-10', name: 'Tempeh', time: 10, passive: 0, tags: ['Vegan', 'Nutty', 'Earthy'], dot: '#C4736A', ingredients: [{ qty: '150', unit: 'g', name: 'Tempeh' }], notes: 'Fermented whole soybean block; shallow fry for crispness.' }
-  ]
-}*/
-        
+          id: 'f-base-bowls-plates', name: 'Rice, Grain & Noodle Dishes', collapsed: false, comps: [
+            { id: 'c-v-6', name: 'Plated Pasta Format', time: 15, passive: 0, tags: ['Gluten'], dot: PALETTE.BASE, ingredients: [], notes: 'Fresh egg pasta, ramen, or udon base.' },
+            { id: 'c-v-7', name: 'Biryani / Layered Rice Bowl', time: 25, passive: 15, tags: ['Gluten-Free', 'Spicy'], dot: PALETTE.BASE, ingredients: [], notes: 'Spiced rice base format.' },
+            { id: 'c-v-8', name: 'Risotto / Creamy Grain Base', time: 25, passive: 0, tags: ['Gluten-Free', 'Dairy', 'Rich'], dot: PALETTE.BASE, ingredients: [], notes: 'Arborio, polenta, or grits bowl.' },
+            { id: 'c-v-9', name: 'Donburi / Seasoned Rice Bowl', time: 10, passive: 0, tags: ['Gluten-Free'], dot: PALETTE.BASE, ingredients: [], notes: 'Sushi rice or jasmine rice format.' }
+          ]
+        },
+        {
+          id: 'f-base-soups-stews', name: 'Soups, Broths & Braises', collapsed: false, comps: [
+            { id: 'c-v-10', name: 'Ramen / Noodle Soup Bowl', time: 20, passive: 0, tags: ['Hot', 'Rich'], dot: PALETTE.BASE, ingredients: [], notes: 'Broth and noodle vehicle.' },
+            { id: 'c-v-11', name: 'Stew / Curry Vessel', time: 20, passive: 0, tags: ['Hot', 'Spicy'], dot: PALETTE.BASE, ingredients: [], notes: 'Deep plate or bowl format.' },
+            { id: 'c-v-12', name: 'Chowder / Bisque Vessel', time: 15, passive: 0, tags: ['Dairy', 'Hot', 'Rich'], dot: PALETTE.BASE, ingredients: [], notes: 'Rich soup vessel format.' }
+          ]
+        },
+        { id: 'f-base-misc', name: 'Miscellaneous Bases', collapsed: false, comps: [] }
       ]
     },
-    PRIMARY: {
+    ENHANCER: {
       collapsed: false,
       unfiled: [],
       folders: [
         {
-          id: 'f-primary-fruit', name: 'Fruit & Curds', collapsed: false, comps: [
-            { id: 'c7', name: 'Mango Purée', time: 10, passive: 0, tags: ['Vegan', 'Tropical', 'Sweet'], dot: '#E8A020', ingredients: [{ qty: '500', unit: 'g', name: 'Fresh Mango' }], notes: '' },
-            { id: 'c8', name: 'Lychee Compote', time: 15, passive: 0, tags: ['Vegan', 'Floral', 'Sweet'], dot: '#C4736A', ingredients: [], notes: '' },
-            { id: 'c9', name: 'Yuzu Curd', time: 15, passive: 20, tags: ['Eggs', 'Dairy', 'Sour', 'Citric'], dot: '#EF9F27', ingredients: [{ qty: '100', unit: 'ml', name: 'Yuzu Juice' }, { qty: '3', unit: 'pcs', name: 'Eggs' }], notes: 'Cook over double boiler until thick.' },
-            { id: 'c10', name: 'Raspberry Coulis', time: 10, passive: 0, tags: ['Vegan', 'Tangy', 'Sweet'], dot: '#D4537E', ingredients: [], notes: '' }
+          id: 'f-enhancer-fruit', name: 'Fruit & Curds', collapsed: false, comps: [
+            { id: 'c7', name: 'Mango Purée', time: 10, passive: 0, tags: ['Vegan', 'Tropical', 'Sweet'], dot: PALETTE.ENHANCER, ingredients: [{ qty: '500', unit: 'g', name: 'Fresh Mango' }], notes: '' },
+            { id: 'c8', name: 'Lychee Compote', time: 15, passive: 0, tags: ['Vegan', 'Floral', 'Sweet'], dot: PALETTE.BASE, ingredients: [], notes: '' },
+            { id: 'c9', name: 'Yuzu Curd', time: 15, passive: 20, tags: ['Eggs', 'Dairy', 'Sour', 'Citric', 'Tangy'], dot: PALETTE.ENHANCER, ingredients: [{ qty: '100', unit: 'ml', name: 'Yuzu Juice' }, { qty: '3', unit: 'pcs', name: 'Eggs' }], notes: 'Cook over double boiler until thick.' },
+            { id: 'c10', name: 'Raspberry Coulis', time: 10, passive: 0, tags: ['Vegan', 'Tangy', 'Sweet', 'Sour'], dot: PALETTE.ACCENT, ingredients: [], notes: '' }
           ]
         },
         {
-          id: 'f-primary-sauces', name: 'Sauces, Curries & Braises', collapsed: false, comps: [
-            { id: 'c13', name: 'Dark Chocolate Ganache', time: 12, passive: 30, tags: ['Dairy', 'Bitter', 'Rich', 'Silky'], dot: '#2C2C2A', ingredients: [{ qty: '200', unit: 'g', name: '70% Dark Chocolate' }, { qty: '200', unit: 'ml', name: 'Cream' }], notes: 'Emulsify gently.' },
-            { id: 'c520', name: 'Classic Béchamel / Mornay', time: 15, passive: 0, tags: ['Dairy', 'Gluten'], dot: '#E8A020', ingredients: [{ qty: '500', unit: 'ml', name: 'Whole milk' }, { qty: '50', unit: 'g', name: 'Butter' }], notes: 'French Mother Sauce.' },
-            { id: 'c521', name: 'Slow-Cooked Ragù Bolognese', time: 30, passive: 180, tags: ['Dairy', 'Rich'], dot: '#E8A020', ingredients: [{ qty: '250', unit: 'g', name: 'Ground beef' }, { qty: '250', unit: 'g', name: 'Ground pork' }], notes: '' },
-            { id: 'c522', name: 'Red Curry Base', time: 15, passive: 30, tags: ['Spicy', 'Tropical'], dot: '#E8A020', ingredients: [{ qty: '100', unit: 'g', name: 'Red curry paste' }, { qty: '400', unit: 'ml', name: 'Coconut milk' }], notes: '' },
-            { id: 'c523', name: 'Mole Negro', time: 45, passive: 120, tags: ['Smoky', 'Bitter', 'Rich'], dot: '#E8A020', ingredients: [{ qty: '3', unit: 'type', name: 'Chipotle/Ancho/Guajillo' }], notes: 'Complex Mexican reduced sauce.' },
-            { id: 'c524', name: 'San Marzano Marinara', time: 10, passive: 45, tags: ['Vegan'], dot: '#E8A020', ingredients: [{ qty: '800', unit: 'g', name: 'San Marzano tomato' }], notes: '' }
+          id: 'f-enhancer-sauces', name: 'Sauces, Curries & Braises', collapsed: false, comps: [
+            { id: 'c13', name: 'Dark Chocolate Ganache', time: 12, passive: 30, tags: ['Dairy', 'Bitter', 'Sweet', 'Rich', 'Silky'], dot: PALETTE.DARK, ingredients: [{ qty: '200', unit: 'g', name: '70% Dark Chocolate' }, { qty: '200', unit: 'ml', name: 'Cream' }], notes: 'Emulsify gently.' },
+            { id: 'c520', name: 'Classic Béchamel / Mornay', time: 15, passive: 0, tags: ['Dairy', 'Gluten', 'Rich'], dot: PALETTE.ENHANCER, ingredients: [{ qty: '500', unit: 'ml', name: 'Whole milk' }, { qty: '50', unit: 'g', name: 'Butter' }], notes: 'French Mother Sauce.' },
+            { id: 'c521', name: 'Slow-Cooked Ragù Bolognese', time: 30, passive: 180, tags: ['Dairy', 'Rich', 'Earthy'], dot: PALETTE.ENHANCER, ingredients: [{ qty: '250', unit: 'g', name: 'Ground beef' }, { qty: '250', unit: 'g', name: 'Ground pork' }], notes: '' },
+            { id: 'c522', name: 'Red Curry Base', time: 15, passive: 30, tags: ['Spicy', 'Tropical', 'Rich'], dot: PALETTE.ENHANCER, ingredients: [{ qty: '100', unit: 'g', name: 'Red curry paste' }, { qty: '400', unit: 'ml', name: 'Coconut milk' }], notes: '' },
+            { id: 'c523', name: 'Mole Negro', time: 45, passive: 120, tags: ['Smoky', 'Bitter', 'Rich', 'Spicy'], dot: PALETTE.ENHANCER, ingredients: [{ qty: '3', unit: 'type', name: 'Chipotle/Ancho/Guajillo' }], notes: 'Complex Mexican reduced sauce.' },
+            { id: 'c524', name: 'San Marzano Marinara', time: 10, passive: 45, tags: ['Vegan', 'Tangy', 'Sour'], dot: PALETTE.ENHANCER, ingredients: [{ qty: '800', unit: 'g', name: 'San Marzano tomato' }], notes: '' }
           ]
         },
         {
-          id: 'f-primary-cheeses', name: 'Cheeses & Purees', collapsed: false, comps: [
-            { id: 'c525', name: 'Burrata & Basil Oil', time: 5, passive: 0, tags: ['Dairy', 'Vegetarian', 'Silky'], dot: '#E8A020', ingredients: [{ qty: '1', unit: 'ball', name: 'Mozzarella di bufala / Burrata' }], notes: '' },
-            { id: 'c526', name: 'Roasted Butternut Squash Puree', time: 15, passive: 40, tags: ['Vegan', 'Earthy'], dot: '#E8A020', ingredients: [{ qty: '1', unit: 'pc', name: 'Butternut squash' }], notes: '' }
+          id: 'f-enhancer-cheeses', name: 'Cheeses & Purees', collapsed: false, comps: [
+            { id: 'c525', name: 'Burrata & Basil Oil', time: 5, passive: 0, tags: ['Dairy', 'Vegetarian', 'Silky', 'Rich'], dot: PALETTE.ENHANCER, ingredients: [{ qty: '1', unit: 'ball', name: 'Mozzarella di bufala / Burrata' }], notes: '' },
+            { id: 'c526', name: 'Roasted Butternut Squash Puree', time: 15, passive: 40, tags: ['Vegan', 'Earthy', 'Sweet'], dot: PALETTE.ENHANCER, ingredients: [{ qty: '1', unit: 'pc', name: 'Butternut squash' }], notes: '' }
           ]
-        }
+        },
+        { id: 'f-enhancer-misc', name: 'Miscellaneous Enhancers', collapsed: false, comps: [] }
       ]
     },
-    SECONDARY: {
+    AROMATIC: {
       collapsed: false,
       unfiled: [],
       folders: [
         {
-          id: 'f-secondary-floral', name: 'Infusions & Syrups', collapsed: false, comps: [
-            { id: 'c15', name: 'Jasmine Tea Infusion', time: 5, passive: 15, tags: ['Vegan', 'Floral', 'Hot'], dot: '#6B8F71', ingredients: [{ qty: '10', unit: 'g', name: 'Jasmine Green Tea' }], notes: '' },
-            { id: 'c16', name: 'Smoked Hibiscus Syrup', time: 20, passive: 30, tags: ['Vegan', 'Floral', 'Smoky', 'Tangy'], dot: '#C4736A', ingredients: [{ qty: '50', unit: 'g', name: 'Dried Hibiscus' }, { qty: '200', unit: 'g', name: 'Sugar' }], notes: 'Infuse wood smoke prior to strain.' }
+          id: 'f-aromatic-floral', name: 'Infusions & Syrups', collapsed: false, comps: [
+            { id: 'c15', name: 'Jasmine Tea Infusion', time: 5, passive: 15, tags: ['Vegan', 'Floral', 'Hot'], dot: PALETTE.AROMATIC, ingredients: [{ qty: '10', unit: 'g', name: 'Jasmine Green Tea' }], notes: '' },
+            { id: 'c16', name: 'Smoked Hibiscus Syrup', time: 20, passive: 30, tags: ['Vegan', 'Floral', 'Smoky', 'Tangy', 'Sour'], dot: PALETTE.BASE, ingredients: [{ qty: '50', unit: 'g', name: 'Dried Hibiscus' }, { qty: '200', unit: 'g', name: 'Sugar' }], notes: 'Infuse wood smoke prior to strain.' }
           ]
         },
         {
-          id: 'f-secondary-condiments', name: 'Oils, Emulsions & Condiments', collapsed: false, comps: [
-            { id: 'c530', name: 'Garlic Aïoli / Toum', time: 10, passive: 0, tags: ['Eggs', 'Tangy'], dot: '#6B8F71', ingredients: [{ qty: '4', unit: 'cloves', name: 'Garlic' }, { qty: '1', unit: 'pc', name: 'Egg yolk' }], notes: '' },
-            { id: 'c531', name: 'Chili Crisp & Sesame Oil', time: 15, passive: 15, tags: ['Vegan', 'Spicy', 'Smoky'], dot: '#6B8F71', ingredients: [{ qty: '50', unit: 'g', name: 'Gochugaru' }, { qty: '100', unit: 'ml', name: 'Neutral oil' }], notes: '' },
-            { id: 'c532', name: 'Chimichurri Salsa', time: 10, passive: 0, tags: ['Vegan', 'Tangy'], dot: '#6B8F71', ingredients: [{ qty: '1', unit: 'bunch', name: 'Flat-leaf parsley' }, { qty: '30', unit: 'ml', name: 'Red wine vinegar' }], notes: '' },
-            { id: 'c533', name: 'Pesto Genovese', time: 10, passive: 0, tags: ['Dairy', 'Tree Nuts', 'Vegetarian'], dot: '#6B8F71', ingredients: [{ qty: '2', unit: 'cups', name: 'Italian basil' }, { qty: '50', unit: 'g', name: 'Parmigiano-Reggiano' }], notes: '' },
-            { id: 'c534', name: 'Aged Balsamic Reduction', time: 5, passive: 20, tags: ['Vegan', 'Sweet', 'Tangy'], dot: '#6B8F71', ingredients: [{ qty: '100', unit: 'ml', name: 'Balsamic vinegar' }], notes: '' }
+          id: 'f-aromatic-condiments', name: 'Oils, Emulsions & Condiments', collapsed: false, comps: [
+            { id: 'c530', name: 'Garlic Aïoli / Toum', time: 10, passive: 0, tags: ['Eggs', 'Tangy', 'Spicy'], dot: PALETTE.AROMATIC, ingredients: [{ qty: '4', unit: 'cloves', name: 'Garlic' }, { qty: '1', unit: 'pc', name: 'Egg yolk' }], notes: '' },
+            { id: 'c531', name: 'Chili Crisp & Sesame Oil', time: 15, passive: 15, tags: ['Vegan', 'Spicy', 'Smoky', 'Sesame'], dot: PALETTE.AROMATIC, ingredients: [{ qty: '50', unit: 'g', name: 'Gochugaru' }, { qty: '100', unit: 'ml', name: 'Neutral oil' }], notes: '' },
+            { id: 'c532', name: 'Chimichurri Salsa', time: 10, passive: 0, tags: ['Vegan', 'Tangy', 'Sour'], dot: PALETTE.AROMATIC, ingredients: [{ qty: '1', unit: 'bunch', name: 'Flat-leaf parsley' }, { qty: '30', unit: 'ml', name: 'Red wine vinegar' }], notes: '' },
+            { id: 'c533', name: 'Pesto Genovese', time: 10, passive: 0, tags: ['Dairy', 'Tree Nuts', 'Vegetarian', 'Earthy'], dot: PALETTE.AROMATIC, ingredients: [{ qty: '2', unit: 'cups', name: 'Italian basil' }, { qty: '50', unit: 'g', name: 'Parmigiano-Reggiano' }], notes: '' },
+            { id: 'c534', name: 'Aged Balsamic Reduction', time: 5, passive: 20, tags: ['Vegan', 'Sweet', 'Tangy', 'Sour'], dot: PALETTE.AROMATIC, ingredients: [{ qty: '100', unit: 'ml', name: 'Balsamic vinegar' }], notes: '' }
           ]
-        }
+        },
+        { id: 'f-aromatic-misc', name: 'Miscellaneous Aromatics', collapsed: false, comps: [] }
       ]
     },
     TEXTURE: {
@@ -199,17 +165,18 @@ const SEED_STATE = {
       folders: [
         {
           id: 'f-texture-crunch', name: 'Crunch & Nuts', collapsed: false, comps: [
-            { id: 'c20', name: 'Toasted Almond Praline', time: 20, passive: 10, tags: ['Tree Nuts', 'Nutty', 'Crispy'], dot: '#E8A020', ingredients: [{ qty: '150', unit: 'g', name: 'Almonds' }, { qty: '100', unit: 'g', name: 'Caramelized Sugar' }], notes: 'Crush finely in food processor.' },
-            { id: 'c540', name: 'Toasted Sesame Furikake', time: 5, passive: 0, tags: ['Sesame', 'Crispy', 'Earthy'], dot: '#888780', ingredients: [{ qty: '2', unit: 'tbsp', name: 'Toasted sesame seeds' }, { qty: '1', unit: 'sheet', name: 'Nori' }], notes: '' },
-            { id: 'c541', name: 'Crispy Pancetta Crumbles', time: 10, passive: 0, tags: ['Crispy', 'Rich'], dot: '#888780', ingredients: [{ qty: '100', unit: 'g', name: 'Pancetta' }], notes: 'Render in skillet.' },
-            { id: 'c542', name: 'Fried Shallot Crickets', time: 8, passive: 0, tags: ['Vegan', 'Crispy'], dot: '#888780', ingredients: [{ qty: '2', unit: 'pcs', name: 'Shallot' }], notes: 'Flash fry in neutral oil.' },
-            { id: 'c543', name: 'Maldon Sea Salt & Microgreens', time: 2, passive: 0, tags: ['Vegan', 'Crispy'], dot: '#888780', ingredients: [{ qty: '1', unit: 'pinch', name: 'Maldon sea salt' }], notes: '' }
+            { id: 'c20', name: 'Toasted Almond Praline', time: 20, passive: 10, tags: ['Tree Nuts', 'Nutty', 'Sweet', 'Crispy'], dot: PALETTE.ENHANCER, ingredients: [{ qty: '150', unit: 'g', name: 'Almonds' }, { qty: '100', unit: 'g', name: 'Caramelized Sugar' }], notes: 'Crush finely in food processor.' },
+            { id: 'c540', name: 'Toasted Sesame Furikake', time: 5, passive: 0, tags: ['Sesame', 'Crispy', 'Earthy'], dot: PALETTE.TEXTURE, ingredients: [{ qty: '2', unit: 'tbsp', name: 'Toasted sesame seeds' }, { qty: '1', unit: 'sheet', name: 'Nori' }], notes: '' },
+            { id: 'c541', name: 'Crispy Pancetta Crumbles', time: 10, passive: 0, tags: ['Crispy', 'Rich'], dot: PALETTE.TEXTURE, ingredients: [{ qty: '100', unit: 'g', name: 'Pancetta' }], notes: 'Render in skillet.' },
+            { id: 'c542', name: 'Fried Shallot Crickets', time: 8, passive: 0, tags: ['Vegan', 'Crispy', 'Earthy'], dot: PALETTE.TEXTURE, ingredients: [{ qty: '2', unit: 'pcs', name: 'Shallot' }], notes: 'Flash fry in neutral oil.' },
+            { id: 'c543', name: 'Maldon Sea Salt & Microgreens', time: 2, passive: 0, tags: ['Vegan', 'Crispy'], dot: PALETTE.TEXTURE, ingredients: [{ qty: '1', unit: 'pinch', name: 'Maldon sea salt' }], notes: '' }
           ]
-        }
+        },
+        { id: 'f-texture-misc', name: 'Miscellaneous Textures', collapsed: false, comps: [] }
       ]
     }
   },
-  assembly: { BASE: [], PRIMARY: [], SECONDARY: [], TEXTURE: [] },
+  assembly: { BASE: [], ENHANCER: [], AROMATIC: [], TEXTURE: [] },
   savedRecipes: [],
   nextId: 600
 };
@@ -268,17 +235,17 @@ export default function App() {
 
   // Assembly calculations
   const assemblyComps = useMemo(() => {
-    return ['BASE', 'PRIMARY', 'SECONDARY', 'TEXTURE']
-      .flatMap(r => appState.assembly[r].map(findComp))
+    return ['BASE', 'ENHANCER', 'AROMATIC', 'TEXTURE']
+      .flatMap(r => (appState.assembly[r] || []).map(findComp))
       .filter(Boolean);
   }, [appState.assembly, allComponents]);
 
   const autoTitle = useMemo(() => {
-    const get = r => appState.assembly[r].map(findComp).filter(Boolean);
-    const b = get('BASE'), p = get('PRIMARY'), s = get('SECONDARY'), t = get('TEXTURE');
+    const get = r => (appState.assembly[r] || []).map(findComp).filter(Boolean);
+    const b = get('BASE'), e = get('ENHANCER'), a = get('AROMATIC'), t = get('TEXTURE');
     const parts = [];
-    if (s.length) parts.push(s.map(c => c.name.split(' ')[0]).join('-'));
-    if (p.length) parts.push(p.map(c => c.name).join(' & '));
+    if (a.length) parts.push(a.map(c => c.name.split(' ')[0]).join('-'));
+    if (e.length) parts.push(e.map(c => c.name).join(' & '));
     if (b.length) parts.push(b[0].name);
     if (t.length) parts.push('with ' + t.map(c => c.name).join(' and '));
     return parts.join(' ');
@@ -289,6 +256,7 @@ export default function App() {
     return {
       tags,
       allergens: tags.filter(t => ALLERGENS.includes(t)),
+      flavors: tags.filter(t => FLAVOR_TAGS.includes(t)),
       dietTags: tags.filter(t => ['Vegan', 'Vegetarian', 'Gluten-Free'].includes(t)),
       totalTime: assemblyComps.reduce((s, c) => s + (c.time || 0) + (c.passive || 0), 0)
     };
@@ -312,41 +280,67 @@ export default function App() {
     }));
   };
 
- const toggleFolder = (folderId) => {
-  setAppState(prev => {
-    const nextRoles = { ...prev.roles };
-    
-    for (const rId in nextRoles) {
-      const role = nextRoles[rId];
-      const folderIndex = role.folders.findIndex(f => f.id === folderId);
-      
-      if (folderIndex !== -1) {
-        // Create a new array and a updated folder object immutably
-        const updatedFolders = [...role.folders];
-        updatedFolders[folderIndex] = {
-          ...updatedFolders[folderIndex],
-          collapsed: !updatedFolders[folderIndex].collapsed
-        };
-        
-        return {
-          ...prev,
-          roles: {
-            ...nextRoles,
-            [rId]: {
-              ...role,
-              folders: updatedFolders
+  const toggleFolder = (folderId) => {
+    setAppState(prev => {
+      const nextRoles = { ...prev.roles };
+
+      for (const rId in nextRoles) {
+        const role = nextRoles[rId];
+        const folderIndex = role.folders.findIndex(f => f.id === folderId);
+
+        if (folderIndex !== -1) {
+          const updatedFolders = [...role.folders];
+          updatedFolders[folderIndex] = {
+            ...updatedFolders[folderIndex],
+            collapsed: !updatedFolders[folderIndex].collapsed
+          };
+
+          return {
+            ...prev,
+            roles: {
+              ...nextRoles,
+              [rId]: {
+                ...role,
+                folders: updatedFolders
+              }
             }
-          }
+          };
+        }
+      }
+      return prev;
+    });
+  };
+  const collapseAllRoles = () => {
+    setAppState(prev => {
+      const nextRoles = { ...prev.roles };
+      for (const rId in nextRoles) {
+        nextRoles[rId] = {
+          ...nextRoles[rId],
+          collapsed: true,
+          folders: nextRoles[rId].folders.map(f => ({ ...f, collapsed: true }))
         };
       }
-    }
-    
-    return prev;
-  });
-};
+      return { ...prev, roles: nextRoles };
+    });
+  };
+
+  const expandAllRoles = () => {
+    setAppState(prev => {
+      const nextRoles = { ...prev.roles };
+      for (const rId in nextRoles) {
+        nextRoles[rId] = {
+          ...nextRoles[rId],
+          collapsed: false,
+          folders: nextRoles[rId].folders.map(f => ({ ...f, collapsed: false }))
+        };
+      }
+      return { ...prev, roles: nextRoles };
+    });
+  };
+
 
   const addFolder = (roleId) => {
-    const nextId = 'id' + (appState.nextId + 1);
+    const nextId = 'f-' + roleId.toLowerCase() + '-' + (appState.nextId + 1);
     const n = appState.roles[roleId].folders.length + 1;
     setAppState(prev => ({
       ...prev,
@@ -415,7 +409,7 @@ export default function App() {
 
   const addToSlot = (cid, role) => {
     setAppState(prev => {
-      const currentList = prev.assembly[role];
+      const currentList = prev.assembly[role] || [];
       if (currentList.includes(cid)) return prev;
       const updated = [...currentList];
       if (updated.length >= SLOT_MAXES[role]) updated.shift();
@@ -427,7 +421,7 @@ export default function App() {
   const removeFromSlot = (role, cid) => {
     setAppState(prev => ({
       ...prev,
-      assembly: { ...prev.assembly, [role]: prev.assembly[role].filter(id => id !== cid) }
+      assembly: { ...prev.assembly, [role]: (prev.assembly[role] || []).filter(id => id !== cid) }
     }));
   };
 
@@ -446,7 +440,7 @@ export default function App() {
     setAppState(prev => ({
       ...prev,
       nextId: prev.nextId + 1,
-      assembly: { BASE: [], PRIMARY: [], SECONDARY: [], TEXTURE: [] },
+      assembly: { BASE: [], ENHANCER: [], AROMATIC: [], TEXTURE: [] },
       savedRecipes: [...prev.savedRecipes, newRecipe]
     }));
     setCurrentTab('recipes');
@@ -469,8 +463,7 @@ export default function App() {
     setAppState(prev => {
       let nextId = prev.nextId;
       const newId = compFormData.id || ('id' + (++nextId));
-      
-      // Clean up previous instance if editing
+
       const nextRoles = { ...prev.roles };
       for (const rId in nextRoles) {
         nextRoles[rId].unfiled = (nextRoles[rId].unfiled || []).filter(c => c.id !== newId);
@@ -485,7 +478,7 @@ export default function App() {
         time: parseInt(compFormData.time, 10) || 0,
         passive: parseInt(compFormData.passive, 10) || 0,
         tags: compFormData.tags,
-        dot: ROLE_DOTS[compFormData.role] || '#888780',
+        dot: ROLE_DOTS[compFormData.role] || PALETTE.MUTED,
         ingredients: compFormData.ingredients.filter(i => i.name.trim()),
         notes: compFormData.notes.trim()
       };
@@ -514,7 +507,6 @@ export default function App() {
     setDishModalOpen(true);
   };
 
-  // Filtered Component Registry logic
   const filteredRegistryComps = useMemo(() => {
     let comps = registryFilter ? allComponents.filter(c => c.role === registryFilter) : allComponents;
     if (registrySearch.trim()) {
@@ -552,15 +544,34 @@ export default function App() {
           <div className="tab-content">
             <div className="cols">
               <aside className="sidebar">
+
                 <div className="sb-header">
                   <span className="sb-title">Components</span>
-                  <button className="sb-create-btn" onClick={() => openComponentModal()}>
-                    <i className="ti ti-plus"></i> New
-                  </button>
+                  <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                    <button
+                      className="fa-btn"
+                      title="Collapse All"
+                      onClick={collapseAllRoles}
+                      style={{ padding: '4px 6px', fontSize: '12px' }}
+                    >
+                      <i className="ti ti-fold-up"></i>
+                    </button>
+                    <button
+                      className="fa-btn"
+                      title="Expand All"
+                      onClick={expandAllRoles}
+                      style={{ padding: '4px 6px', fontSize: '12px' }}
+                    >
+                      <i className="ti ti-fold-down"></i>
+                    </button>
+                    <button className="sb-create-btn" onClick={() => openComponentModal()}>
+                      <i className="ti ti-plus"></i> New
+                    </button>
+                  </div>
                 </div>
                 <div>
                   {ROLES.map(role => {
-                    const rs = appState.roles[role.id];
+                    const rs = appState.roles[role.id] || { collapsed: false, unfiled: [], folders: [] };
                     const unfiledCount = (rs.unfiled || []).length;
                     const total = rs.folders.reduce((s, f) => s + f.comps.length, 0) + unfiledCount;
                     return (
@@ -621,6 +632,9 @@ export default function App() {
                     {inheritedMeta.totalTime > 0 && (
                       <span className="meta-chip time"><i className="ti ti-clock"></i> {inheritedMeta.totalTime} min total</span>
                     )}
+                    {inheritedMeta.flavors.map(f => (
+                      <span key={f} className="meta-chip flavor"><i className="ti ti-flame"></i> {f}</span>
+                    ))}
                     {inheritedMeta.allergens.map(a => (
                       <span key={a} className="meta-chip allergen"><i className="ti ti-alert-triangle"></i> {a}</span>
                     ))}
@@ -630,63 +644,62 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Slots */}
-                <div>
-                  <div className="slot-label">Base vehicle <span className="slot-hint">(1 max)</span></div>
-                  <SlotBox
-                    role="BASE"
-                    assemblyIds={appState.assembly.BASE}
-                    findComp={findComp}
-                    removeFromSlot={removeFromSlot}
-                    addToSlot={addToSlot}
-                    dragItem={dragItem}
-                    dragOverSlot={dragOverSlot}
-                    setDragOverSlot={setDragOverSlot}
-                    placeholder="Drop or click a base"
-                  />
-                </div>
-
-                <div className="slot-row">
+                {/* Slots Grid */}
+                <div className="slot-row grid-4-col">
                   <div>
-                    <div className="slot-label">Primary flavors <span className="slot-hint">(up to 3)</span></div>
+                    <div className="slot-label">Base vehicle <span className="slot-hint">(1 max)</span></div>
                     <SlotBox
-                      role="PRIMARY"
-                      assemblyIds={appState.assembly.PRIMARY}
+                      role="BASE"
+                      assemblyIds={appState.assembly.BASE || []}
                       findComp={findComp}
                       removeFromSlot={removeFromSlot}
                       addToSlot={addToSlot}
                       dragItem={dragItem}
                       dragOverSlot={dragOverSlot}
                       setDragOverSlot={setDragOverSlot}
-                      placeholder="Drop flavors"
+                      placeholder="Drop base component"
                     />
                   </div>
                   <div>
-                    <div className="slot-label">Secondary / aromatic <span className="slot-hint">(up to 3)</span></div>
+                    <div className="slot-label">Flavor enhancers & sauces <span className="slot-hint">(up to 3)</span></div>
                     <SlotBox
-                      role="SECONDARY"
-                      assemblyIds={appState.assembly.SECONDARY}
+                      role="ENHANCER"
+                      assemblyIds={appState.assembly.ENHANCER || []}
                       findComp={findComp}
                       removeFromSlot={removeFromSlot}
                       addToSlot={addToSlot}
                       dragItem={dragItem}
                       dragOverSlot={dragOverSlot}
                       setDragOverSlot={setDragOverSlot}
-                      placeholder="Drop aromatics"
+                      placeholder="Drop enhancers or sauces"
                     />
                   </div>
                   <div>
-                    <div className="slot-label">Textures <span className="slot-hint">(up to 3)</span></div>
+                    <div className="slot-label">Aromatics & accents <span className="slot-hint">(up to 3)</span></div>
+                    <SlotBox
+                      role="AROMATIC"
+                      assemblyIds={appState.assembly.AROMATIC || []}
+                      findComp={findComp}
+                      removeFromSlot={removeFromSlot}
+                      addToSlot={addToSlot}
+                      dragItem={dragItem}
+                      dragOverSlot={dragOverSlot}
+                      setDragOverSlot={setDragOverSlot}
+                      placeholder="Drop aromatics or accents"
+                    />
+                  </div>
+                  <div>
+                    <div className="slot-label">Textures & finishes <span className="slot-hint">(up to 3)</span></div>
                     <SlotBox
                       role="TEXTURE"
-                      assemblyIds={appState.assembly.TEXTURE}
+                      assemblyIds={appState.assembly.TEXTURE || []}
                       findComp={findComp}
                       removeFromSlot={removeFromSlot}
                       addToSlot={addToSlot}
                       dragItem={dragItem}
                       dragOverSlot={dragOverSlot}
                       setDragOverSlot={setDragOverSlot}
-                      placeholder="Drop textures"
+                      placeholder="Drop texture elements"
                     />
                   </div>
                 </div>
@@ -696,7 +709,7 @@ export default function App() {
                   <div className="tag-grid">
                     {inheritedMeta.tags.length > 0 ? (
                       inheritedMeta.tags.map(t => (
-                        <span key={t} className={`tag-pill ${ALLERGENS.includes(t) ? 'allergen' : ''}`}>{t}</span>
+                        <span key={t} className={`tag-pill ${ALLERGENS.includes(t) ? 'allergen' : ''} ${FLAVOR_TAGS.includes(t) ? 'flavor' : ''}`}>{t}</span>
                       ))
                     ) : (
                       <span className="tags-placeholder">Rolls up automatically from components</span>
@@ -750,13 +763,13 @@ export default function App() {
                   <div>
                     <div className="rc-cat">{c.role}</div>
                     <div className="rc-title">{c.name}</div>
-                    <div style={{ fontSize: '11px', color: '#9c9a96', margin: '4px 0 8px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <div style={{ fontSize: '11px', color: PALETTE.MUTED, margin: '4px 0 8px', display: 'flex', alignItems: 'center', gap: '4px' }}>
                       <i className="ti ti-clock"></i>{c.time}m active{c.passive ? ` + ${c.passive}m passive` : ''}
                     </div>
                   </div>
                   <div className="rc-tags">
                     {(c.tags || []).map(t => (
-                      <span key={t} className={`rc-tag ${ALLERGENS.includes(t) ? 'allergen' : ''}`}>{t}</span>
+                      <span key={t} className={`rc-tag ${ALLERGENS.includes(t) ? 'allergen' : ''} ${FLAVOR_TAGS.includes(t) ? 'flavor' : ''}`}>{t}</span>
                     ))}
                   </div>
                 </div>
@@ -789,7 +802,7 @@ export default function App() {
                     <div className="rc-title">{r.title}</div>
                     <div className="rc-tags">
                       {(r.tags || []).map(t => (
-                        <span key={t} className={`rc-tag ${ALLERGENS.includes(t) ? 'allergen' : ''}`}>{t}</span>
+                        <span key={t} className={`rc-tag ${ALLERGENS.includes(t) ? 'allergen' : ''} ${FLAVOR_TAGS.includes(t) ? 'flavor' : ''}`}>{t}</span>
                       ))}
                     </div>
                   </div>
@@ -848,20 +861,16 @@ function FolderItem({
 
   return (
     <div className="folder">
-      <div 
-        className="folder-header" 
+      <div
+        className="folder-header"
         onClick={(e) => {
           if (e.target.closest('.folder-actions, .folder-name-input')) return;
           if (!isUnfiled) toggleFolder(folder.id);
         }}
       >
-        {/* Chevron Icon */}
         <i className={`ti ti-chevron-right folder-chevron ${isOpen ? 'open' : ''}`}></i>
-        
-        {/* Correct Tabler Folder Icons */}
         <i className={`ti ${isOpen ? 'ti-folder-open' : 'ti-folder'} folder-icon ${isOpen ? 'open' : ''}`}></i>
 
-        {/* Editable Name or Plain Text */}
         {editingFolderId === folder.id && !isUnfiled ? (
           <input
             type="text"
@@ -869,9 +878,9 @@ function FolderItem({
             value={folderNameVal}
             onChange={e => setFolderNameVal(e.target.value)}
             onBlur={handleBlurOrEnter}
-            onKeyDown={e => { 
-              if (e.key === 'Enter') handleBlurOrEnter(); 
-              if (e.key === 'Escape') setEditingFolderId(null); 
+            onKeyDown={e => {
+              if (e.key === 'Enter') handleBlurOrEnter();
+              if (e.key === 'Escape') setEditingFolderId(null);
             }}
             autoFocus
             onClick={e => e.stopPropagation()}
@@ -880,27 +889,26 @@ function FolderItem({
           <span className="folder-name">{folder.name}</span>
         )}
 
-        {/* Action Buttons */}
         <div className="folder-actions">
-          <button 
-            className="fa-btn add" 
-            title="Add component" 
+          <button
+            className="fa-btn add"
+            title="Add component"
             onClick={(e) => { e.stopPropagation(); openComponentModal(null, roleId, folder.id); }}
           >
             <i className="ti ti-plus"></i>
           </button>
           {!isUnfiled && (
             <>
-              <button 
-                className="fa-btn rename" 
-                title="Rename folder" 
+              <button
+                className="fa-btn rename"
+                title="Rename folder"
                 onClick={(e) => { e.stopPropagation(); setEditingFolderId(folder.id); }}
               >
                 <i className="ti ti-pencil"></i>
               </button>
-              <button 
-                className="fa-btn" 
-                title="Delete folder" 
+              <button
+                className="fa-btn"
+                title="Delete folder"
                 onClick={(e) => {
                   e.stopPropagation();
                   if (window.confirm(`Delete folder "${folder.name}"?`)) deleteFolder(folder.id);
@@ -913,7 +921,6 @@ function FolderItem({
         </div>
       </div>
 
-      {/* Child Components inside Folder */}
       {!folder.collapsed && (
         <div className="folder-body">
           {folder.comps.map(comp => (
@@ -1052,9 +1059,9 @@ function ComponentEditorModal({ data, roles, onClose, onSave }) {
                 onChange={e => setFormData({ ...formData, role: e.target.value, folderId: '' })}
               >
                 <option value="BASE">Base vehicles</option>
-                <option value="PRIMARY">Primary flavors</option>
-                <option value="SECONDARY">Secondary / aromatic</option>
-                <option value="TEXTURE">Textures</option>
+                <option value="ENHANCER">Flavor enhancers & sauces</option>
+                <option value="AROMATIC">Aromatics & accents</option>
+                <option value="TEXTURE">Textures & finishes</option>
               </select>
             </div>
             <div className="form-group">
@@ -1138,7 +1145,7 @@ function ComponentEditorModal({ data, roles, onClose, onSave }) {
                 onKeyDown={handleTagKeyDown}
               />
             </div>
-            <div style={{ fontSize: '10px', color: 'var(--tm)', marginTop: '2px' }}>Suggested tags:</div>
+            <div style={{ fontSize: '10px', color: PALETTE.MUTED, marginTop: '2px' }}>Suggested tags:</div>
             <div className="tag-suggestions">
               {PREDEFINED_TAGS.map(t => (
                 <span key={t} className="tag-sug-pill" onClick={() => {
@@ -1203,7 +1210,7 @@ function DishDetailModal({ recipe, findComp, onClose }) {
                     <div key={c.id} className="dish-comp-card">
                       <div className="dish-comp-head">
                         <span>{c.name}</span>
-                        <span style={{ color: 'var(--tm)', fontSize: '11px' }}>{c.time}m active</span>
+                        <span style={{ color: PALETTE.MUTED, fontSize: '11px' }}>{c.time}m active</span>
                       </div>
                       {c.ingredients?.length > 0 && (
                         <ul className="dish-comp-ings">
@@ -1213,7 +1220,7 @@ function DishDetailModal({ recipe, findComp, onClose }) {
                         </ul>
                       )}
                       {c.notes && (
-                        <div style={{ fontSize: '11px', color: 'var(--tm)', marginTop: '4px', fontStyle: 'italic' }}>
+                        <div style={{ fontSize: '11px', color: PALETTE.MUTED, marginTop: '4px', fontStyle: 'italic' }}>
                           Note: {c.notes}
                         </div>
                       )}
@@ -1228,7 +1235,7 @@ function DishDetailModal({ recipe, findComp, onClose }) {
             <div className="dish-sec-title">Allergens & Tags</div>
             <div className="tag-grid">
               {(recipe.tags || []).map(t => (
-                <span key={t} className={`tag-pill ${ALLERGENS.includes(t) ? 'allergen' : ''}`}>{t}</span>
+                <span key={t} className={`tag-pill ${ALLERGENS.includes(t) ? 'allergen' : ''} ${FLAVOR_TAGS.includes(t) ? 'flavor' : ''}`}>{t}</span>
               ))}
             </div>
           </div>
@@ -1236,7 +1243,7 @@ function DishDetailModal({ recipe, findComp, onClose }) {
           {recipe.chefNotes && (
             <div className="dish-sec">
               <div className="dish-sec-title">Chef Notes</div>
-              <p style={{ fontSize: '12px', color: 'var(--ts)', lineHeight: '1.4' }}>{recipe.chefNotes}</p>
+              <p style={{ fontSize: '12px', color: PALETTE.DARK, lineHeight: '1.4' }}>{recipe.chefNotes}</p>
             </div>
           )}
         </div>
