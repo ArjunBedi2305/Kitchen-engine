@@ -74,26 +74,33 @@ const SEED_STATE = {
       folders: [
         {
           id: 'f-base-custards', name: 'Custards', collapsed: false, comps: [
-            { id: 'c1', name: 'Cheesecake Base', time: 20, passive: 180, tags: ['Dairy', 'Gluten', 'Sweet', 'Chilled'], dot: PALETTE.BASE, ingredients: [{ qty: '250', unit: 'g', name: 'Cream Cheese' }, { qty: '100', unit: 'g', name: 'Sugar' }, { qty: '2', unit: 'pcs', name: 'Eggs' }], notes: 'Bake in water bath.' },
-            { id: 'c2', name: 'Vanilla Panna Cotta', time: 10, passive: 240, tags: ['Dairy', 'Sweet', 'Silky'], dot: PALETTE.HIGHLIGHT, ingredients: [{ qty: '300', unit: 'ml', name: 'Heavy Cream' }, { qty: '1', unit: 'tsp', name: 'Vanilla Bean Paste' }], notes: 'Set with gelatin.' },
-            { id: 'c3', name: 'Crème Brûlée Base', time: 15, passive: 60, tags: ['Dairy', 'Eggs', 'Sweet', 'Rich'], dot: PALETTE.ENHANCER, ingredients: [{ qty: '4', unit: 'yolks', name: 'Egg Yolks' }], notes: '' }
+            { id: 'c1', name: 'Cheesecake', time: 20, passive: 180, tags: ['Dairy', 'Gluten', 'Sweet', 'Chilled'], dot: PALETTE.BASE, ingredients: [{ qty: '250', unit: 'g', name: 'Cream Cheese' }, { qty: '100', unit: 'g', name: 'Sugar' }, { qty: '2', unit: 'pcs', name: 'Eggs' }], notes: 'Bake in water bath.' },
+            { id: 'c2', name: ' Panna Cotta', time: 10, passive: 240, tags: ['Dairy', 'Sweet', 'Silky'], dot: PALETTE.HIGHLIGHT, ingredients: [{ qty: '300', unit: 'ml', name: 'Heavy Cream' }, { qty: '1', unit: 'tsp', name: 'Vanilla Bean Paste' }], notes: 'Set with gelatin.' },
+            { id: 'c3', name: 'Crème Brûlée ', time: 15, passive: 60, tags: ['Dairy', 'Eggs', 'Sweet', 'Rich'], dot: PALETTE.ENHANCER, ingredients: [{ qty: '4', unit: 'yolks', name: 'Egg Yolks' }], notes: '' }
           ]
         },
         {
-          id: 'f-base-handhelds', name: 'Wraps & Handhelds', collapsed: false, comps: [
-            { id: 'c-v-1', name: 'Taco Shell / Tortilla', time: 5, passive: 0, tags: ['Gluten-Free'], dot: PALETTE.BASE, ingredients: [], notes: 'Soft corn or flour tortilla format.' },
-            { id: 'c-v-2', name: 'Burrito / Stuffed Wrap', time: 5, passive: 0, tags: ['Gluten'], dot: PALETTE.BASE, ingredients: [], notes: 'Large flour tortilla or flatbread.' },
-            { id: 'c-v-3', name: 'Sandwich / Bun / Roll', time: 5, passive: 0, tags: ['Gluten'], dot: PALETTE.BASE, ingredients: [], notes: 'Brioche, sourdough baguette, or ciabatta base.' },
-            { id: 'c-v-4', name: 'Pita Pocket / Flatbread', time: 5, passive: 0, tags: ['Gluten'], dot: PALETTE.BASE, ingredients: [], notes: 'Naan, pita, or lavash fold.' },
-            { id: 'c-v-5', name: 'Spring Roll / Summer Roll Wrap', time: 10, passive: 0, tags: ['Vegan', 'Gluten-Free'], dot: PALETTE.BASE, ingredients: [], notes: 'Rice paper or crisp wrapper.' }
+          id: 'f-base-handhelds', name: 'Handhelds', collapsed: false, comps: [
+            { id: 'c-v-1', name: 'Taco', time: 5, passive: 0, tags: ['Gluten-Free'], dot: PALETTE.BASE, ingredients: [], notes: 'Soft corn or flour tortilla format.' },
+            { id: 'c-v-2', name: 'Burrito', time: 5, passive: 0, tags: ['Gluten'], dot: PALETTE.BASE, ingredients: [], notes: 'Large flour tortilla or flatbread.' },
+            { id: 'c-v-3', name: 'Sandwich', time: 5, passive: 0, tags: ['Gluten'], dot: PALETTE.BASE, ingredients: [], notes: 'Brioche, sourdough baguette, or ciabatta base.' },
+            { id: 'c-v-4', name: 'Slider', time: 5, passive: 0, tags: ['Gluten'], dot: PALETTE.BASE, ingredients: [], notes: 'Brioche, sourdough baguette, or ciabatta base.' },
+            
+            { id: 'c-v-5', name: 'Pita Pocket', time: 5, passive: 0, tags: ['Gluten'], dot: PALETTE.BASE, ingredients: [], notes: 'Naan, pita, or lavash fold.' },
+            { id: 'c-v-6', name: 'Spring Roll', time: 10, passive: 0, tags: ['Vegan', 'Gluten-Free'], dot: PALETTE.BASE, ingredients: [], notes: 'Rice paper or crisp wrapper.' },
+            { id: 'c-v-7', name: 'Nachos', time: 10, passive: 0, tags: ['Vegan', 'Gluten-Free'], dot: PALETTE.BASE, ingredients: [], notes: 'Rice paper or crisp wrapper.' }
+          
           ]
+
         },
         {
           id: 'f-base-bowls-plates', name: 'Rice, Grain & Noodle Dishes', collapsed: false, comps: [
             { id: 'c-v-6', name: 'Plated Pasta Format', time: 15, passive: 0, tags: ['Gluten'], dot: PALETTE.BASE, ingredients: [], notes: 'Fresh egg pasta, ramen, or udon base.' },
             { id: 'c-v-7', name: 'Biryani / Layered Rice Bowl', time: 25, passive: 15, tags: ['Gluten-Free', 'Spicy'], dot: PALETTE.BASE, ingredients: [], notes: 'Spiced rice base format.' },
             { id: 'c-v-8', name: 'Risotto / Creamy Grain Base', time: 25, passive: 0, tags: ['Gluten-Free', 'Dairy', 'Rich'], dot: PALETTE.BASE, ingredients: [], notes: 'Arborio, polenta, or grits bowl.' },
-            { id: 'c-v-9', name: 'Donburi / Seasoned Rice Bowl', time: 10, passive: 0, tags: ['Gluten-Free'], dot: PALETTE.BASE, ingredients: [], notes: 'Sushi rice or jasmine rice format.' }
+            { id: 'c-v-9', name: 'Donburi / Seasoned Rice Bowl', time: 10, passive: 0, tags: ['Gluten-Free'], dot: PALETTE.BASE, ingredients: [], notes: 'Sushi rice or jasmine rice format.' },
+            { id: 'c-v-10', name: 'Pasta', time: 10, passive: 0, tags: ['Gluten-Free'], dot: PALETTE.BASE, ingredients: [], notes: 'Sushi rice or jasmine rice format.' }
+          
           ]
         },
         {
@@ -125,7 +132,16 @@ const SEED_STATE = {
             { id: 'c521', name: 'Slow-Cooked Ragù Bolognese', time: 30, passive: 180, tags: ['Dairy', 'Rich', 'Earthy'], dot: PALETTE.ENHANCER, ingredients: [{ qty: '250', unit: 'g', name: 'Ground beef' }, { qty: '250', unit: 'g', name: 'Ground pork' }], notes: '' },
             { id: 'c522', name: 'Red Curry Base', time: 15, passive: 30, tags: ['Spicy', 'Tropical', 'Rich'], dot: PALETTE.ENHANCER, ingredients: [{ qty: '100', unit: 'g', name: 'Red curry paste' }, { qty: '400', unit: 'ml', name: 'Coconut milk' }], notes: '' },
             { id: 'c523', name: 'Mole Negro', time: 45, passive: 120, tags: ['Smoky', 'Bitter', 'Rich', 'Spicy'], dot: PALETTE.ENHANCER, ingredients: [{ qty: '3', unit: 'type', name: 'Chipotle/Ancho/Guajillo' }], notes: 'Complex Mexican reduced sauce.' },
-            { id: 'c524', name: 'San Marzano Marinara', time: 10, passive: 45, tags: ['Vegan', 'Tangy', 'Sour'], dot: PALETTE.ENHANCER, ingredients: [{ qty: '800', unit: 'g', name: 'San Marzano tomato' }], notes: '' }
+            { id: 'c524', name: 'San Marzano Marinara', time: 10, passive: 45, tags: ['Vegan', 'Tangy', 'Sour'], dot: PALETTE.ENHANCER, ingredients: [{ qty: '800', unit: 'g', name: 'San Marzano tomato' }], notes: '' },
+            { id: 'carbonara', name: 'Carbonara', time: 10, passive: 45, tags: ['Vegan', 'Tangy', 'Sour'], dot: PALETTE.ENHANCER, ingredients: [{ qty: '800', unit: 'g', name: 'San Marzano tomato' }], notes: '' },
+            { id: 'cacio', name: 'Cacio e pepe', time: 10, passive: 45, tags: ['Vegan', 'Tangy', 'Sour'], dot: PALETTE.ENHANCER, ingredients: [{ qty: '800', unit: 'g', name: 'San Marzano tomato' }], notes: '' },
+            { id: 'peppercorn', name: 'Peppercorn', time: 10, passive: 45, tags: ['Vegan', 'Tangy', 'Sour'], dot: PALETTE.ENHANCER, ingredients: [{ qty: '800', unit: 'g', name: 'San Marzano tomato' }], notes: '' },
+            { id: 'blanc-beurre', name: 'Blanc beurre', time: 10, passive: 45, tags: ['Vegan', 'Tangy', 'Sour'], dot: PALETTE.ENHANCER, ingredients: [{ qty: '800', unit: 'g', name: 'San Marzano tomato' }], notes: '' },
+            { id: 'vodka-sauce', name: 'Vodka Sauce', time: 10, passive: 45, tags: ['Vegan', 'Tangy', 'Sour'], dot: PALETTE.ENHANCER, ingredients: [{ qty: '800', unit: 'g', name: 'San Marzano tomato' }], notes: '' },
+            { id: 'butter-chicken', name: 'Butter chicken', time: 10, passive: 45, tags: ['Vegan', 'Tangy', 'Sour'], dot: PALETTE.ENHANCER, ingredients: [{ qty: '800', unit: 'g', name: 'San Marzano tomato' }], notes: '' },
+          
+          
+          
           ]
         },
         {
@@ -168,7 +184,7 @@ const SEED_STATE = {
             { id: 'c20', name: 'Toasted Almond Praline', time: 20, passive: 10, tags: ['Tree Nuts', 'Nutty', 'Sweet', 'Crispy'], dot: PALETTE.ENHANCER, ingredients: [{ qty: '150', unit: 'g', name: 'Almonds' }, { qty: '100', unit: 'g', name: 'Caramelized Sugar' }], notes: 'Crush finely in food processor.' },
             { id: 'c540', name: 'Toasted Sesame Furikake', time: 5, passive: 0, tags: ['Sesame', 'Crispy', 'Earthy'], dot: PALETTE.TEXTURE, ingredients: [{ qty: '2', unit: 'tbsp', name: 'Toasted sesame seeds' }, { qty: '1', unit: 'sheet', name: 'Nori' }], notes: '' },
             { id: 'c541', name: 'Crispy Pancetta Crumbles', time: 10, passive: 0, tags: ['Crispy', 'Rich'], dot: PALETTE.TEXTURE, ingredients: [{ qty: '100', unit: 'g', name: 'Pancetta' }], notes: 'Render in skillet.' },
-            { id: 'c542', name: 'Fried Shallot Crickets', time: 8, passive: 0, tags: ['Vegan', 'Crispy', 'Earthy'], dot: PALETTE.TEXTURE, ingredients: [{ qty: '2', unit: 'pcs', name: 'Shallot' }], notes: 'Flash fry in neutral oil.' },
+            { id: 'c542', name: 'Fried Shallot ', time: 8, passive: 0, tags: ['Vegan', 'Crispy', 'Earthy'], dot: PALETTE.TEXTURE, ingredients: [{ qty: '2', unit: 'pcs', name: 'Shallot' }], notes: 'Flash fry in neutral oil.' },
             { id: 'c543', name: 'Maldon Sea Salt & Microgreens', time: 2, passive: 0, tags: ['Vegan', 'Crispy'], dot: PALETTE.TEXTURE, ingredients: [{ qty: '1', unit: 'pinch', name: 'Maldon sea salt' }], notes: '' }
           ]
         },
