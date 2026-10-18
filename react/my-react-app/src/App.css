@@ -624,7 +624,17 @@ body {
 .slot-tag .rm:hover {
   color: var(--tr);
 }
-
+.ing-tag-pill {
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: var(--s0);
+  color: var(--ts);
+  border: 1px dashed var(--bds);
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+}
 .slot-empty {
   font-size: 11px;
   color: var(--tm);
