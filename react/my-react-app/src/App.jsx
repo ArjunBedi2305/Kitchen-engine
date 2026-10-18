@@ -95,11 +95,12 @@ const SEED_STATE = {
         },
         {
           id: 'f-base-bowls-plates', name: 'Rice, Grain & Noodle Dishes', collapsed: false, comps: [
-            { id: 'c-v-6', name: 'Plated Pasta Format', time: 15, passive: 0, tags: ['Gluten'], dot: PALETTE.BASE, ingredients: [], notes: 'Fresh egg pasta, ramen, or udon base.' },
+            { id: 'noodles', name: 'Plated Pasta Format', time: 15, passive: 0, tags: ['Gluten'], dot: PALETTE.BASE, ingredients: [], notes: 'Fresh egg pasta, ramen, or udon base.' },
             { id: 'c-v-7', name: 'Biryani / Layered Rice Bowl', time: 25, passive: 15, tags: ['Gluten-Free', 'Spicy'], dot: PALETTE.BASE, ingredients: [], notes: 'Spiced rice base format.' },
             { id: 'c-v-8', name: 'Risotto / Creamy Grain Base', time: 25, passive: 0, tags: ['Gluten-Free', 'Dairy', 'Rich'], dot: PALETTE.BASE, ingredients: [], notes: 'Arborio, polenta, or grits bowl.' },
             { id: 'c-v-9', name: 'Donburi / Seasoned Rice Bowl', time: 10, passive: 0, tags: ['Gluten-Free'], dot: PALETTE.BASE, ingredients: [], notes: 'Sushi rice or jasmine rice format.' },
-            { id: 'c-v-10', name: 'Pasta', time: 10, passive: 0, tags: ['Gluten-Free'], dot: PALETTE.BASE, ingredients: [], notes: 'Sushi rice or jasmine rice format.' }
+            { id: 'c-v-10', name: 'Pasta', time: 10, passive: 0, tags: ['Gluten-Free'], dot: PALETTE.BASE, ingredients: [], notes: 'Sushi rice or jasmine rice format.' },
+            { id: 'c-v-10', name: 'Rice Bowl', time: 10, passive: 0, tags: ['Gluten-Free'], dot: PALETTE.BASE, ingredients: [], notes: 'Mix and match any rice, protein and sauce' }
           
           ]
         },
@@ -107,7 +108,9 @@ const SEED_STATE = {
           id: 'f-base-soups-stews', name: 'Soups, Broths & Braises', collapsed: false, comps: [
             { id: 'c-v-10', name: 'Ramen / Noodle Soup Bowl', time: 20, passive: 0, tags: ['Hot', 'Rich'], dot: PALETTE.BASE, ingredients: [], notes: 'Broth and noodle vehicle.' },
             { id: 'c-v-11', name: 'Stew / Curry Vessel', time: 20, passive: 0, tags: ['Hot', 'Spicy'], dot: PALETTE.BASE, ingredients: [], notes: 'Deep plate or bowl format.' },
-            { id: 'c-v-12', name: 'Chowder / Bisque Vessel', time: 15, passive: 0, tags: ['Dairy', 'Hot', 'Rich'], dot: PALETTE.BASE, ingredients: [], notes: 'Rich soup vessel format.' }
+            { id: 'c-v-12', name: 'Chowder / Bisque Vessel', time: 15, passive: 0, tags: ['Dairy', 'Hot', 'Rich'], dot: PALETTE.BASE, ingredients: [], notes: 'Rich soup vessel format.' },
+            { id: 'c-v-13', name: 'Base soup', time: 15, passive: 0, tags: ['Dairy', 'Hot', 'Rich'], dot: PALETTE.BASE, ingredients: [], notes: 'Rich soup vessel format.' }
+          
           ]
         },
         { id: 'f-base-misc', name: 'Miscellaneous Bases', collapsed: false, comps: [] }
