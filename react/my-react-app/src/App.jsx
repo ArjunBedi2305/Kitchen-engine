@@ -13,9 +13,9 @@ const PALETTE = {
   HIGHLIGHT: '#FAC775'   // Cream
 };
 
-const STORAGE_KEY = 'culinaryEngineState_v11';
+const STORAGE_KEY = 'culinaryEngineState_v12';
 
-// DOMAIN CATEGORIES (Replaces rigid 4-Role taxonomy)
+// DOMAIN CATEGORIES
 const CATEGORIES = [
   { id: 'GRAINS', label: 'Grains, Breads & Starches', color: PALETTE.GRAINS },
   { id: 'PROTEINS', label: 'Proteins & Hearty Fillings', color: PALETTE.PROTEINS },
@@ -55,6 +55,15 @@ const SEED_RECIPES = [
     bcg: 'STAR',
     chefNotes: 'Crisp carnitas in skillet prior to assembling soft corn tortilla.',
     components: ['taco-shell', 'carnitas', 'pico-de-gallo', 'pickled-red-onion']
+  },
+  {
+    id: 'recipe-jasmine-mango-tart',
+    title: 'Jasmine Mango Pâte Sucrée with Toasted Almond Praline',
+    tags: ['Dairy', 'Gluten', 'Tree Nuts', 'Floral', 'Tropical', 'Nutty', 'Sweet'],
+    cat: 'DESSERT',
+    bcg: 'PLOWHORSE',
+    chefNotes: 'Bake crust until lightly golden brown. Dust with almond powder while hot.',
+    components: ['pate-sucree', 'mango-puree', 'jasmine-tea-infusion', 'almond-praline']
   }
 ];
 
@@ -65,10 +74,14 @@ const SEED_STATE = {
       unfiled: [],
       folders: [
         {
-          id: 'f-grains-flatbreads', name: 'Flatbreads & Wraps', collapsed: false, comps: [
+          id: 'f-grains-flatbreads', name: 'Flatbreads & Handheld Wraps', collapsed: false, comps: [
             { id: 'taco-shell', name: 'Taco Shell', time: 5, passive: 0, tags: ['Gluten-Free'], dot: PALETTE.GRAINS, ingredients: [], notes: 'Soft corn or flour tortilla format.' },
             { id: 'burrito-wrap', name: 'Burrito Wrap', time: 5, passive: 0, tags: ['Gluten'], dot: PALETTE.GRAINS, ingredients: [], notes: 'Large flour tortilla or flatbread.' },
-            { id: 'pita-pocket', name: 'Pita Pocket', time: 5, passive: 0, tags: ['Gluten'], dot: PALETTE.GRAINS, ingredients: [], notes: 'Naan, pita, or lavash fold.' }
+            { id: 'sandwich-bun', name: 'Sandwich / Brioche Bun', time: 5, passive: 0, tags: ['Gluten'], dot: PALETTE.GRAINS, ingredients: [], notes: 'Brioche, sourdough baguette, or ciabatta base.' },
+            { id: 'slider-bun', name: 'Slider Bun', time: 5, passive: 0, tags: ['Gluten'], dot: PALETTE.GRAINS, ingredients: [], notes: 'Brioche, sourdough baguette, or ciabatta base.' },
+            { id: 'pita-pocket', name: 'Pita Pocket / Naan', time: 5, passive: 0, tags: ['Gluten'], dot: PALETTE.GRAINS, ingredients: [], notes: 'Naan, pita, or lavash fold.' },
+            { id: 'spring-roll-wrap', name: 'Spring Roll Wrapper', time: 10, passive: 0, tags: ['Vegan', 'Gluten-Free'], dot: PALETTE.GRAINS, ingredients: [], notes: 'Rice paper or crisp wrapper.' },
+            { id: 'nacho-chip-base', name: 'Nacho Chips Base', time: 10, passive: 0, tags: ['Vegan', 'Gluten-Free'], dot: PALETTE.GRAINS, ingredients: [], notes: 'Crisp tortilla chip vessel.' }
           ]
         },
         {
@@ -81,25 +94,41 @@ const SEED_STATE = {
                 { qty: '2', unit: 'tbsp', name: 'Lime Juice', tags: ['Acid'] }
               ], notes: 'Fold herbs into cooked rice.'
             },
-            { id: 'biryani-rice', name: 'Biryani Rice', time: 25, passive: 15, tags: ['Gluten-Free', 'Spicy'], dot: PALETTE.GRAINS, ingredients: [], notes: '' }
+            { id: 'biryani-rice', name: 'Biryani Spiced Rice', time: 25, passive: 15, tags: ['Gluten-Free', 'Spicy'], dot: PALETTE.GRAINS, ingredients: [], notes: 'Spiced rice base format.' },
+            { id: 'risotto-grain-base', name: 'Risotto / Creamy Grain Base', time: 25, passive: 0, tags: ['Gluten-Free', 'Dairy', 'Rich'], dot: PALETTE.GRAINS, ingredients: [], notes: 'Arborio, polenta, or grits bowl.' },
+            { id: 'donburi-rice-bowl', name: 'Donburi Seasoned Rice', time: 10, passive: 0, tags: ['Gluten-Free'], dot: PALETTE.GRAINS, ingredients: [], notes: 'Sushi rice or jasmine rice format.' }
           ]
         },
         {
           id: 'f-grains-noodles', name: 'Noodles & Pasta', collapsed: false, comps: [
             { id: 'ramen-noodles', name: 'Ramen Noodles', time: 10, passive: 0, tags: ['Gluten', 'Hot'], dot: PALETTE.GRAINS, ingredients: [{ qty: '180', unit: 'g', name: 'Alkaline Noodles', tags: ['Cooked'] }], notes: '' },
-            { id: 'pad-thai-noodles', name: 'Pad Thai Rice Noodles', time: 12, passive: 0, tags: ['Gluten-Free'], dot: PALETTE.GRAINS, ingredients: [], notes: '' },
-            { id: 'udon-noodles', name: 'Udon Noodles', time: 10, passive: 0, tags: ['Gluten', 'Silky'], dot: PALETTE.GRAINS, ingredients: [], notes: '' }
+            { id: 'pad-thai-noodles', name: 'Pad Thai Rice Noodles', time: 12, passive: 0, tags: ['Gluten-Free', 'Nutty'], dot: PALETTE.GRAINS, ingredients: [{ qty: '200', unit: 'g', name: 'Flat Rice Noodles', tags: ['Cooked'] }], notes: '' },
+            { id: 'udon-noodles', name: 'Udon Noodles', time: 10, passive: 0, tags: ['Gluten', 'Silky'], dot: PALETTE.GRAINS, ingredients: [{ qty: '200', unit: 'g', name: 'Udon Noodles', tags: ['Cooked'] }], notes: '' },
+            { id: 'pasta-bowl', name: 'Fresh Pasta Format', time: 15, passive: 0, tags: ['Gluten'], dot: PALETTE.GRAINS, ingredients: [], notes: 'Fresh egg pasta, fettuccine, or penne.' }
           ]
         },
         {
-          id: 'f-grains-pastry', name: 'Pastry & Crusts', collapsed: false, comps: [
+          id: 'f-grains-pastry', name: 'Pastry, Custards & Crusts', collapsed: false, comps: [
             {
-              id: 'cheesecake-base', name: 'Cheesecake Custard Base', time: 20, passive: 180, tags: ['Dairy', 'Gluten', 'Sweet'], dot: PALETTE.GRAINS,
+              id: 'cheesecake-base', name: 'Cheesecake Custard Base', time: 20, passive: 180, tags: ['Dairy', 'Gluten', 'Sweet', 'Chilled'], dot: PALETTE.GRAINS,
               ingredients: [
                 { qty: '250', unit: 'g', name: 'Cream Cheese', tags: ['Dairy', 'Fat', 'Emulsifier'] },
-                { qty: '100', unit: 'g', name: 'Sugar', tags: ['Sweetener'] }
-              ], notes: ''
-            }
+                { qty: '100', unit: 'g', name: 'Sugar', tags: ['Sweetener'] },
+                { qty: '2', unit: 'pcs', name: 'Eggs', tags: ['Dairy', 'Protein', 'Binder'] }
+              ], notes: 'Bake in water bath.'
+            },
+            {
+              id: 'vanilla-panna-cotta', name: 'Panna Cotta', time: 10, passive: 240, tags: ['Dairy', 'Sweet', 'Silky'], dot: PALETTE.HIGHLIGHT,
+              ingredients: [
+                { qty: '300', unit: 'ml', name: 'Heavy Cream', tags: ['Dairy', 'Fat'] },
+                { qty: '1', unit: 'tsp', name: 'Vanilla Bean Paste', tags: ['Aromatic', 'Sweetener'] }
+              ], notes: 'Set with gelatin.'
+            },
+            {
+              id: 'creme-brulee-base', name: 'Crème Brûlée', time: 15, passive: 60, tags: ['Dairy', 'Eggs', 'Sweet', 'Rich'], dot: PALETTE.GRAINS,
+              ingredients: [{ qty: '4', unit: 'yolks', name: 'Egg Yolks', tags: ['Dairy', 'Protein', 'Fat', 'Emulsifier'] }], notes: ''
+            },
+            { id: 'pate-sucree', name: 'Pâte Sucrée Tart Shell', time: 20, passive: 30, tags: ['Dairy', 'Gluten', 'Sweet'], dot: PALETTE.GRAINS, ingredients: [], notes: 'Sweet shortcrust dough.' }
           ]
         }
       ]
@@ -119,15 +148,14 @@ const SEED_STATE = {
             },
             {
               id: 'carne-asada', name: 'Grilled Carne Asada', time: 15, passive: 60, tags: ['Smoky', 'Spicy'], dot: PALETTE.PROTEINS,
-              ingredients: [
-                { qty: '400', unit: 'g', name: 'Flank Steak', tags: ['Protein'] }
-              ], notes: 'High heat sear.'
+              ingredients: [{ qty: '400', unit: 'g', name: 'Flank Steak', tags: ['Protein'] }], notes: 'High heat sear to medium-rare.'
             }
           ]
         },
         {
-          id: 'f-proteins-plant', name: 'Plant-Based & Beans', collapsed: false, comps: [
+          id: 'f-proteins-plant', name: 'Plant-Based & Legumes', collapsed: false, comps: [
             { id: 'adobo-tofu', name: 'Adobo Marinated Tofu', time: 15, passive: 30, tags: ['Vegan', 'Spicy'], dot: PALETTE.PROTEINS, ingredients: [{ qty: '350', unit: 'g', name: 'Extra Firm Tofu', tags: ['Protein', 'Raw'] }], notes: '' },
+            { id: 'charro-beans', name: 'Stewed Charro Beans', time: 15, passive: 45, tags: ['Rich', 'Earthy'], dot: PALETTE.PROTEINS, ingredients: [{ qty: '250', unit: 'g', name: 'Pinto Beans', tags: ['Protein', 'Cooked'] }], notes: '' },
             { id: 'black-beans', name: 'Stewed Black Beans', time: 10, passive: 30, tags: ['Vegan', 'Earthy'], dot: PALETTE.PROTEINS, ingredients: [], notes: '' }
           ]
         }
@@ -138,13 +166,26 @@ const SEED_STATE = {
       unfiled: [],
       folders: [
         {
-          id: 'f-sauces-savory', name: 'Savory Sauces & Curries', collapsed: false, comps: [
-            { id: 'ragu-bolognese', name: 'Slow-Cooked Ragù Bolognese', time: 30, passive: 180, tags: ['Dairy', 'Rich'], dot: PALETTE.SAUCES, ingredients: [], notes: '' },
-            { id: 'red-curry-base', name: 'Red Curry Base', time: 15, passive: 30, tags: ['Spicy', 'Tropical', 'Rich'], dot: PALETTE.SAUCES, ingredients: [], notes: '' }
+          id: 'f-sauces-savory', name: 'Savory Sauces, Curries & Broths', collapsed: false, comps: [
+            { id: 'classic-bechamel', name: 'Classic Béchamel / Mornay', time: 15, passive: 0, tags: ['Dairy', 'Gluten', 'Rich'], dot: PALETTE.SAUCES, ingredients: [{ qty: '500', unit: 'ml', name: 'Whole milk', tags: ['Dairy', 'Fat'] }], notes: 'French Mother Sauce.' },
+            { id: 'ragu-bolognese', name: 'Slow-Cooked Ragù Bolognese', time: 30, passive: 180, tags: ['Dairy', 'Rich', 'Earthy'], dot: PALETTE.SAUCES, ingredients: [{ qty: '250', unit: 'g', name: 'Ground beef', tags: ['Protein', 'Fat'] }], notes: '' },
+            { id: 'red-curry-base', name: 'Red Curry Base', time: 15, passive: 30, tags: ['Spicy', 'Tropical', 'Rich'], dot: PALETTE.SAUCES, ingredients: [{ qty: '400', unit: 'ml', name: 'Coconut milk', tags: ['Fat', 'Emulsifier'] }], notes: '' },
+            { id: 'mole-negro', name: 'Mole Negro', time: 45, passive: 120, tags: ['Smoky', 'Bitter', 'Rich', 'Spicy'], dot: PALETTE.SAUCES, ingredients: [], notes: '' },
+            { id: 'san-marzano-marinara', name: 'San Marzano Marinara', time: 10, passive: 45, tags: ['Vegan', 'Tangy', 'Sour'], dot: PALETTE.SAUCES, ingredients: [{ qty: '800', unit: 'g', name: 'San Marzano tomato', tags: ['Acid'] }], notes: '' },
+            { id: 'carbonara-sauce', name: 'Carbonara Sauce', time: 10, passive: 0, tags: ['Dairy', 'Rich'], dot: PALETTE.SAUCES, ingredients: [], notes: '' },
+            { id: 'cacio-e-pepe', name: 'Cacio e Pepe Base', time: 10, passive: 0, tags: ['Dairy', 'Spicy'], dot: PALETTE.SAUCES, ingredients: [], notes: '' },
+            { id: 'peppercorn-sauce', name: 'Peppercorn Sauce', time: 10, passive: 0, tags: ['Rich', 'Spicy'], dot: PALETTE.SAUCES, ingredients: [], notes: '' },
+            { id: 'beurre-blanc', name: 'Beurre Blanc', time: 10, passive: 0, tags: ['Dairy', 'Acid', 'Rich'], dot: PALETTE.SAUCES, ingredients: [], notes: '' },
+            { id: 'vodka-sauce', name: 'Vodka Sauce', time: 10, passive: 0, tags: ['Dairy', 'Rich'], dot: PALETTE.SAUCES, ingredients: [], notes: '' },
+            { id: 'butter-chicken-sauce', name: 'Butter Chicken Gravy', time: 15, passive: 30, tags: ['Dairy', 'Spicy', 'Rich'], dot: PALETTE.SAUCES, ingredients: [], notes: '' },
+            { id: 'stew-curry-vessel', name: 'Stew / Curry Gravy Vessel', time: 20, passive: 0, tags: ['Hot', 'Spicy'], dot: PALETTE.SAUCES, ingredients: [], notes: '' },
+            { id: 'chowder-bisque-vessel', name: 'Chowder / Bisque Base', time: 15, passive: 0, tags: ['Dairy', 'Hot', 'Rich'], dot: PALETTE.SAUCES, ingredients: [], notes: '' }
           ]
         },
         {
-          id: 'f-sauces-sweet', name: 'Sweet Sauces & Curds', collapsed: false, comps: [
+          id: 'f-sauces-fruit-sweet', name: 'Fruit, Curds & Sweet Sauces', collapsed: false, comps: [
+            { id: 'mango-puree', name: 'Mango Purée', time: 10, passive: 0, tags: ['Vegan', 'Tropical', 'Sweet'], dot: PALETTE.SAUCES, ingredients: [{ qty: '500', unit: 'g', name: 'Fresh Mango', tags: ['Sweetener', 'Raw'] }], notes: '' },
+            { id: 'lychee-compote', name: 'Lychee Compote', time: 15, passive: 0, tags: ['Vegan', 'Floral', 'Sweet'], dot: PALETTE.SAUCES, ingredients: [], notes: '' },
             {
               id: 'yuzu-curd', name: 'Yuzu Curd', time: 15, passive: 20, tags: ['Eggs', 'Dairy', 'Sour', 'Citric', 'Tangy'], dot: PALETTE.SAUCES,
               ingredients: [
@@ -152,7 +193,14 @@ const SEED_STATE = {
                 { qty: '3', unit: 'pcs', name: 'Eggs', tags: ['Protein', 'Fat', 'Emulsifier'] }
               ], notes: ''
             },
-            { id: 'dark-choco-ganache', name: 'Dark Chocolate Ganache', time: 12, passive: 30, tags: ['Dairy', 'Bitter', 'Sweet', 'Silky'], dot: PALETTE.SAUCES, ingredients: [], notes: '' }
+            { id: 'raspberry-coulis', name: 'Raspberry Coulis', time: 10, passive: 0, tags: ['Vegan', 'Tangy', 'Sweet', 'Sour'], dot: PALETTE.SAUCES, ingredients: [], notes: '' },
+            {
+              id: 'dark-choco-ganache', name: 'Dark Chocolate Ganache', time: 12, passive: 30, tags: ['Dairy', 'Bitter', 'Sweet', 'Rich', 'Silky'], dot: PALETTE.SAUCES,
+              ingredients: [
+                { qty: '200', unit: 'g', name: '70% Dark Chocolate', tags: ['Fat', 'Sweetener'] },
+                { qty: '200', unit: 'ml', name: 'Cream', tags: ['Dairy', 'Fat'] }
+              ], notes: ''
+            }
           ]
         }
       ]
@@ -162,7 +210,7 @@ const SEED_STATE = {
       unfiled: [],
       folders: [
         {
-          id: 'f-produce-fresh', name: 'Fresh Toppings & Salsas', collapsed: false, comps: [
+          id: 'f-produce-fresh', name: 'Fresh Toppings & Pickles', collapsed: false, comps: [
             {
               id: 'pico-de-gallo', name: 'Pico de Gallo', time: 10, passive: 0, tags: ['Vegan', 'Tangy', 'Sour'], dot: PALETTE.PRODUCE,
               ingredients: [
@@ -170,13 +218,20 @@ const SEED_STATE = {
                 { qty: '1/2', unit: 'pc', name: 'Red Onion', tags: ['Allium', 'Raw'] }
               ], notes: ''
             },
-            { id: 'pickled-red-onion', name: 'Pickled Red Onions', time: 10, passive: 60, tags: ['Vegan', 'Tangy', 'Sour'], dot: PALETTE.PRODUCE, ingredients: [{ qty: '1', unit: 'pc', name: 'Red Onion', tags: ['Allium', 'Acid'] }], notes: '' }
+            { id: 'pickled-red-onion', name: 'Pickled Red Onions', time: 10, passive: 60, tags: ['Vegan', 'Tangy', 'Sour'], dot: PALETTE.PRODUCE, ingredients: [{ qty: '1', unit: 'pc', name: 'Red Onion', tags: ['Allium', 'Acid'] }], notes: '' },
+            { id: 'burrata-basil-oil', name: 'Burrata & Basil Oil', time: 5, passive: 0, tags: ['Dairy', 'Vegetarian', 'Silky', 'Rich'], dot: PALETTE.PRODUCE, ingredients: [{ qty: '1', unit: 'ball', name: 'Burrata', tags: ['Dairy', 'Fat'] }], notes: '' },
+            { id: 'butternut-squash-puree', name: 'Roasted Butternut Squash Puree', time: 15, passive: 40, tags: ['Vegan', 'Earthy', 'Sweet'], dot: PALETTE.PRODUCE, ingredients: [], notes: '' }
           ]
         },
         {
-          id: 'f-produce-infusions', name: 'Infusions & Oils', collapsed: false, comps: [
-            { id: 'smoked-hibiscus-syrup', name: 'Smoked Hibiscus Syrup', time: 20, passive: 30, tags: ['Vegan', 'Floral', 'Smoky', 'Tangy'], dot: PALETTE.PRODUCE, ingredients: [], notes: '' },
-            { id: 'garlic-aioli', name: 'Garlic Aïoli', time: 10, passive: 0, tags: ['Eggs', 'Tangy'], dot: PALETTE.PRODUCE, ingredients: [{ qty: '4', unit: 'cloves', name: 'Garlic', tags: ['Allium', 'Aromatic'] }], notes: '' }
+          id: 'f-produce-condiments', name: 'Aromatics, Oils & Condiments', collapsed: false, comps: [
+            { id: 'garlic-aioli-toum', name: 'Garlic Aïoli / Toum', time: 10, passive: 0, tags: ['Eggs', 'Tangy', 'Spicy'], dot: PALETTE.PRODUCE, ingredients: [{ qty: '4', unit: 'cloves', name: 'Garlic', tags: ['Allium', 'Aromatic'] }], notes: '' },
+            { id: 'chili-crisp-sesame-oil', name: 'Chili Crisp & Sesame Oil', time: 15, passive: 15, tags: ['Vegan', 'Spicy', 'Smoky', 'Sesame'], dot: PALETTE.PRODUCE, ingredients: [], notes: '' },
+            { id: 'chimichurri-salsa', name: 'Chimichurri Salsa', time: 10, passive: 0, tags: ['Vegan', 'Tangy', 'Sour'], dot: PALETTE.PRODUCE, ingredients: [], notes: '' },
+            { id: 'pesto-genovese', name: 'Pesto Genovese', time: 10, passive: 0, tags: ['Dairy', 'Tree Nuts', 'Vegetarian', 'Earthy'], dot: PALETTE.PRODUCE, ingredients: [], notes: '' },
+            { id: 'aged-balsamic-reduction', name: 'Aged Balsamic Reduction', time: 5, passive: 20, tags: ['Vegan', 'Sweet', 'Tangy', 'Sour'], dot: PALETTE.PRODUCE, ingredients: [], notes: '' },
+            { id: 'jasmine-tea-infusion', name: 'Jasmine Tea Infusion', time: 5, passive: 15, tags: ['Vegan', 'Floral', 'Hot'], dot: PALETTE.PRODUCE, ingredients: [], notes: '' },
+            { id: 'smoked-hibiscus-syrup', name: 'Smoked Hibiscus Syrup', time: 20, passive: 30, tags: ['Vegan', 'Floral', 'Smoky', 'Tangy'], dot: PALETTE.PRODUCE, ingredients: [], notes: '' }
           ]
         }
       ]
@@ -186,10 +241,12 @@ const SEED_STATE = {
       unfiled: [],
       folders: [
         {
-          id: 'f-finishes-crunch', name: 'Crunch & Nuts', collapsed: false, comps: [
-            { id: 'almond-praline', name: 'Toasted Almond Praline', time: 20, passive: 10, tags: ['Tree Nuts', 'Nutty', 'Crispy'], dot: PALETTE.FINISHES, ingredients: [], notes: '' },
-            { id: 'sesame-furikake', name: 'Toasted Sesame Furikake', time: 5, passive: 0, tags: ['Sesame', 'Crispy'], dot: PALETTE.FINISHES, ingredients: [], notes: '' },
-            { id: 'pancetta-crumbles', name: 'Crispy Pancetta Crumbles', time: 10, passive: 0, tags: ['Crispy', 'Rich'], dot: PALETTE.FINISHES, ingredients: [], notes: '' }
+          id: 'f-finishes-crunch', name: 'Crunch & Finishing Elements', collapsed: false, comps: [
+            { id: 'almond-praline', name: 'Toasted Almond Praline', time: 20, passive: 10, tags: ['Tree Nuts', 'Nutty', 'Sweet', 'Crispy'], dot: PALETTE.FINISHES, ingredients: [], notes: '' },
+            { id: 'sesame-furikake', name: 'Toasted Sesame Furikake', time: 5, passive: 0, tags: ['Sesame', 'Crispy', 'Earthy'], dot: PALETTE.FINISHES, ingredients: [], notes: '' },
+            { id: 'pancetta-crumbles', name: 'Crispy Pancetta Crumbles', time: 10, passive: 0, tags: ['Crispy', 'Rich'], dot: PALETTE.FINISHES, ingredients: [], notes: '' },
+            { id: 'fried-shallot-crisps', name: 'Fried Shallots', time: 8, passive: 0, tags: ['Vegan', 'Crispy', 'Earthy'], dot: PALETTE.FINISHES, ingredients: [], notes: '' },
+            { id: 'maldon-sea-salt-microgreens', name: 'Maldon Sea Salt & Microgreens', time: 2, passive: 0, tags: ['Vegan', 'Crispy'], dot: PALETTE.FINISHES, ingredients: [], notes: '' }
           ]
         }
       ]
