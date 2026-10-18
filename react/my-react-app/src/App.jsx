@@ -3,33 +3,33 @@ import './App.css';
 
 // ── PALETTE DEFINITIONS & CONSTANTS ──────────────────────────────────────────
 const PALETTE = {
-  BASE: '#C4736A',      // Terracotta
-  ENHANCER: '#E8A020',  // Warm Amber
-  AROMATIC: '#6B8F71',  // Sage Green
-  TEXTURE: '#888780',   // Slate Gray
-  MUTED: '#9C9A96',     // Muted Gray
-  DARK: '#2C2C2A',      // Charcoal
-  ACCENT: '#D4537E',    // Crimson
-  HIGHLIGHT: '#FAC775'  // Cream
+  GRAINS: '#C4736A',     // Terracotta / Warm Starch
+  PROTEINS: '#D4537E',   // Crimson / Meat
+  SAUCES: '#E8A020',     // Warm Amber / Sauce
+  PRODUCE: '#6B8F71',    // Sage Green / Fresh
+  FINISHES: '#888780',   // Slate Gray / Texture
+  MUTED: '#9C9A96',      // Muted Gray
+  DARK: '#2C2C2A',       // Charcoal
+  HIGHLIGHT: '#FAC775'   // Cream
 };
 
-const STORAGE_KEY = 'culinaryEngineState_v9';
+const STORAGE_KEY = 'culinaryEngineState_v11';
 
-const ROLES = [
-  { id: 'BASE', label: 'Base vehicles', color: PALETTE.BASE },
-  { id: 'ENHANCER', label: 'Flavor enhancers & sauces', color: PALETTE.ENHANCER },
-  { id: 'AROMATIC', label: 'Aromatics & accents', color: PALETTE.AROMATIC },
-  { id: 'TEXTURE', label: 'Textures & finishes', color: PALETTE.TEXTURE },
+// DOMAIN CATEGORIES (Replaces rigid 4-Role taxonomy)
+const CATEGORIES = [
+  { id: 'GRAINS', label: 'Grains, Breads & Starches', color: PALETTE.GRAINS },
+  { id: 'PROTEINS', label: 'Proteins & Hearty Fillings', color: PALETTE.PROTEINS },
+  { id: 'SAUCES', label: 'Sauces, Curries & Liquids', color: PALETTE.SAUCES },
+  { id: 'PRODUCE', label: 'Fresh Produce, Pickles & Accents', color: PALETTE.PRODUCE },
+  { id: 'FINISHES', label: 'Crunch, Toppings & Finishes', color: PALETTE.FINISHES },
 ];
 
-const ROLE_DOTS = {
-  BASE: PALETTE.BASE,
-  ENHANCER: PALETTE.ENHANCER,
-  AROMATIC: PALETTE.AROMATIC,
-  TEXTURE: PALETTE.TEXTURE,
+const ARCHETYPES = {
+  CANVAS: { id: 'CANVAS', label: 'Open Canvas (6 Slots)', maxSlots: 6 },
+  HANDHELD: { id: 'HANDHELD', label: 'Handheld / Wrap (Vessel + Fillings + Accents)', maxSlots: 6 },
+  BOWL: { id: 'BOWL', label: 'Noodle / Rice Bowl (Base + Sauce/Broth + Fillings)', maxSlots: 7 },
+  DESSERT: { id: 'DESSERT', label: 'Plated Dessert (Base + Sauce/Gel + Finish)', maxSlots: 5 }
 };
-
-const SLOT_MAXES = { BASE: 1, ENHANCER: 3, AROMATIC: 3, TEXTURE: 3 };
 
 const ALLERGENS = ['Dairy', 'Gluten', 'Tree Nuts', 'Eggs', 'Sesame', 'Soy', 'Peanuts', 'Shellfish'];
 const FLAVOR_TAGS = ['Sweet', 'Sour', 'Bitter', 'Floral', 'Smoky', 'Tangy', 'Earthy', 'Spicy', 'Rich', 'Citric', 'Tropical', 'Nutty'];
@@ -45,183 +45,158 @@ const SEED_RECIPES = [
     cat: 'DESSERT',
     bcg: 'STAR',
     chefNotes: 'Ensure the Yuzu curd is emulsified before adding to the ganache layer.',
-    components: [
-      { id: 'cheesecake-base', role: 'BASE' },
-      { id: 'yuzu-curd', role: 'ENHANCER' },
-      { id: 'dark-choco-ganache', role: 'ENHANCER' },
-      { id: 'smoked-hibiscus-syrup', role: 'AROMATIC' }
-    ]
+    components: ['cheesecake-base', 'yuzu-curd', 'dark-choco-ganache', 'smoked-hibiscus-syrup']
   },
   {
-    id: 'recipe-jasmine-mango-tart',
-    title: 'Jasmine Mango Pâte Sucrée with Toasted Almond Praline',
-    tags: ['Dairy', 'Gluten', 'Tree Nuts', 'Floral', 'Tropical', 'Nutty', 'Sweet'],
-    cat: 'DESSERT',
-    bcg: 'PLOWHORSE',
-    chefNotes: 'Bake crust until lightly golden brown. Dust with almond powder while hot.',
-    components: [
-      { id: 'pate-sucree', role: 'BASE' },
-      { id: 'mango-puree', role: 'ENHANCER' },
-      { id: 'jasmine-tea-infusion', role: 'AROMATIC' },
-      { id: 'almond-praline', role: 'TEXTURE' }
-    ]
-  },
+    id: 'recipe-carnitas-taco',
+    title: 'Pico de Gallo Slow-Cooked Carnitas Taco with Pickled Red Onions',
+    tags: ['Rich', 'Tangy', 'Sour', 'Spicy', 'Gluten-Free'],
+    cat: 'HANDHELD',
+    bcg: 'STAR',
+    chefNotes: 'Crisp carnitas in skillet prior to assembling soft corn tortilla.',
+    components: ['taco-shell', 'carnitas', 'pico-de-gallo', 'pickled-red-onion']
+  }
 ];
 
 const SEED_STATE = {
-  roles: {
-    BASE: {
+  categories: {
+    GRAINS: {
       collapsed: false,
       unfiled: [],
       folders: [
         {
-          id: 'f-base-custards', name: 'Custards', collapsed: false, comps: [
+          id: 'f-grains-flatbreads', name: 'Flatbreads & Wraps', collapsed: false, comps: [
+            { id: 'taco-shell', name: 'Taco Shell', time: 5, passive: 0, tags: ['Gluten-Free'], dot: PALETTE.GRAINS, ingredients: [], notes: 'Soft corn or flour tortilla format.' },
+            { id: 'burrito-wrap', name: 'Burrito Wrap', time: 5, passive: 0, tags: ['Gluten'], dot: PALETTE.GRAINS, ingredients: [], notes: 'Large flour tortilla or flatbread.' },
+            { id: 'pita-pocket', name: 'Pita Pocket', time: 5, passive: 0, tags: ['Gluten'], dot: PALETTE.GRAINS, ingredients: [], notes: 'Naan, pita, or lavash fold.' }
+          ]
+        },
+        {
+          id: 'f-grains-rice', name: 'Rice & Grains', collapsed: false, comps: [
             {
-              id: 'cheesecake-base', name: 'Cheesecake', time: 20, passive: 180, tags: ['Dairy', 'Gluten', 'Sweet', 'Chilled'], dot: PALETTE.BASE,
+              id: 'cilantro-lime-rice', name: 'Cilantro-Lime Rice', time: 15, passive: 20, tags: ['Vegan', 'Tangy'], dot: PALETTE.GRAINS,
+              ingredients: [
+                { qty: '200', unit: 'g', name: 'Jasmine Rice', tags: ['Cooked'] },
+                { qty: '1', unit: 'bunch', name: 'Fresh Cilantro', tags: ['Herb', 'Aromatic'] },
+                { qty: '2', unit: 'tbsp', name: 'Lime Juice', tags: ['Acid'] }
+              ], notes: 'Fold herbs into cooked rice.'
+            },
+            { id: 'biryani-rice', name: 'Biryani Rice', time: 25, passive: 15, tags: ['Gluten-Free', 'Spicy'], dot: PALETTE.GRAINS, ingredients: [], notes: '' }
+          ]
+        },
+        {
+          id: 'f-grains-noodles', name: 'Noodles & Pasta', collapsed: false, comps: [
+            { id: 'ramen-noodles', name: 'Ramen Noodles', time: 10, passive: 0, tags: ['Gluten', 'Hot'], dot: PALETTE.GRAINS, ingredients: [{ qty: '180', unit: 'g', name: 'Alkaline Noodles', tags: ['Cooked'] }], notes: '' },
+            { id: 'pad-thai-noodles', name: 'Pad Thai Rice Noodles', time: 12, passive: 0, tags: ['Gluten-Free'], dot: PALETTE.GRAINS, ingredients: [], notes: '' },
+            { id: 'udon-noodles', name: 'Udon Noodles', time: 10, passive: 0, tags: ['Gluten', 'Silky'], dot: PALETTE.GRAINS, ingredients: [], notes: '' }
+          ]
+        },
+        {
+          id: 'f-grains-pastry', name: 'Pastry & Crusts', collapsed: false, comps: [
+            {
+              id: 'cheesecake-base', name: 'Cheesecake Custard Base', time: 20, passive: 180, tags: ['Dairy', 'Gluten', 'Sweet'], dot: PALETTE.GRAINS,
               ingredients: [
                 { qty: '250', unit: 'g', name: 'Cream Cheese', tags: ['Dairy', 'Fat', 'Emulsifier'] },
-                { qty: '100', unit: 'g', name: 'Sugar', tags: ['Sweetener'] },
-                { qty: '2', unit: 'pcs', name: 'Eggs', tags: ['Dairy', 'Protein', 'Binder'] }
-              ],
-              notes: 'Bake in water bath.'
+                { qty: '100', unit: 'g', name: 'Sugar', tags: ['Sweetener'] }
+              ], notes: ''
+            }
+          ]
+        }
+      ]
+    },
+    PROTEINS: {
+      collapsed: false,
+      unfiled: [],
+      folders: [
+        {
+          id: 'f-proteins-meats', name: 'Meats & Poultry', collapsed: false, comps: [
+            {
+              id: 'carnitas', name: 'Slow-Cooked Carnitas', time: 20, passive: 180, tags: ['Rich', 'Earthy'], dot: PALETTE.PROTEINS,
+              ingredients: [
+                { qty: '500', unit: 'g', name: 'Pork Shoulder', tags: ['Protein', 'Fat'] },
+                { qty: '2', unit: 'pcs', name: 'Oranges', tags: ['Acid'] }
+              ], notes: 'Shred and crisp in skillet.'
             },
             {
-              id: 'vanilla-panna-cotta', name: 'Panna Cotta', time: 10, passive: 240, tags: ['Dairy', 'Sweet', 'Silky'], dot: PALETTE.HIGHLIGHT,
+              id: 'carne-asada', name: 'Grilled Carne Asada', time: 15, passive: 60, tags: ['Smoky', 'Spicy'], dot: PALETTE.PROTEINS,
               ingredients: [
-                { qty: '300', unit: 'ml', name: 'Heavy Cream', tags: ['Dairy', 'Fat'] },
-                { qty: '1', unit: 'tsp', name: 'Vanilla Bean Paste', tags: ['Aromatic', 'Sweetener'] }
-              ],
-              notes: 'Set with gelatin.'
-            },
-            {
-              id: 'creme-brulee-base', name: 'Crème Brûlée', time: 15, passive: 60, tags: ['Dairy', 'Eggs', 'Sweet', 'Rich'], dot: PALETTE.ENHANCER,
-              ingredients: [
-                { qty: '4', unit: 'yolks', name: 'Egg Yolks', tags: ['Dairy', 'Protein', 'Fat', 'Emulsifier'] }
-              ],
-              notes: ''
+                { qty: '400', unit: 'g', name: 'Flank Steak', tags: ['Protein'] }
+              ], notes: 'High heat sear.'
             }
           ]
         },
         {
-          id: 'f-base-handhelds', name: 'Handhelds', collapsed: false, comps: [
-            { id: 'taco-shell', name: 'Taco', time: 5, passive: 0, tags: ['Gluten-Free'], dot: PALETTE.BASE, ingredients: [], notes: 'Soft corn or flour tortilla format.' },
-            { id: 'burrito-wrap', name: 'Burrito', time: 5, passive: 0, tags: ['Gluten'], dot: PALETTE.BASE, ingredients: [], notes: 'Large flour tortilla or flatbread.' },
-            { id: 'sandwich-bun', name: 'Sandwich', time: 5, passive: 0, tags: ['Gluten'], dot: PALETTE.BASE, ingredients: [], notes: 'Brioche, sourdough baguette, or ciabatta base.' },
-            { id: 'slider-bun', name: 'Slider', time: 5, passive: 0, tags: ['Gluten'], dot: PALETTE.BASE, ingredients: [], notes: 'Brioche, sourdough baguette, or ciabatta base.' },
-            { id: 'pita-pocket', name: 'Pita Pocket', time: 5, passive: 0, tags: ['Gluten'], dot: PALETTE.BASE, ingredients: [], notes: 'Naan, pita, or lavash fold.' },
-            { id: 'spring-roll-wrap', name: 'Spring Roll', time: 10, passive: 0, tags: ['Vegan', 'Gluten-Free'], dot: PALETTE.BASE, ingredients: [], notes: 'Rice paper or crisp wrapper.' },
-            { id: 'nacho-chip-base', name: 'Nachos', time: 10, passive: 0, tags: ['Vegan', 'Gluten-Free'], dot: PALETTE.BASE, ingredients: [], notes: 'Rice paper or crisp wrapper.' }
+          id: 'f-proteins-plant', name: 'Plant-Based & Beans', collapsed: false, comps: [
+            { id: 'adobo-tofu', name: 'Adobo Marinated Tofu', time: 15, passive: 30, tags: ['Vegan', 'Spicy'], dot: PALETTE.PROTEINS, ingredients: [{ qty: '350', unit: 'g', name: 'Extra Firm Tofu', tags: ['Protein', 'Raw'] }], notes: '' },
+            { id: 'black-beans', name: 'Stewed Black Beans', time: 10, passive: 30, tags: ['Vegan', 'Earthy'], dot: PALETTE.PROTEINS, ingredients: [], notes: '' }
           ]
-        },
-        {
-          id: 'f-base-noodles', name: 'Noodles & Pasta', collapsed: false, comps: [
-            { id: 'pad-thai-noodles', name: 'Pad Thai', time: 15, passive: 0, tags: ['Gluten-Free', 'Nutty'], dot: PALETTE.BASE, ingredients: [{ qty: '200', unit: 'g', name: 'Flat Rice Noodles', tags: ['Cooked'] }], notes: 'Stir-fried rice noodle base format.' },
-            { id: 'udon-noodles', name: 'Udon', time: 12, passive: 0, tags: ['Gluten', 'Silky'], dot: PALETTE.BASE, ingredients: [{ qty: '200', unit: 'g', name: 'Udon Noodles', tags: ['Cooked'] }], notes: 'Thick wheat noodle vessel.' },
-            { id: 'ramen-bowl', name: 'Ramen / Noodle Soup Bowl', time: 20, passive: 0, tags: ['Hot', 'Rich', 'Gluten'], dot: PALETTE.BASE, ingredients: [{ qty: '180', unit: 'g', name: 'Ramen Noodles', tags: ['Cooked'] }], notes: 'Broth and alkaline noodle vehicle.' },
-            { id: 'pasta-bowl', name: 'Plated Pasta Format', time: 15, passive: 0, tags: ['Gluten'], dot: PALETTE.BASE, ingredients: [], notes: 'Fresh egg pasta, fettuccine, or penne base.' }
-          ]
-        },
-        {
-          id: 'f-base-rice-grains', name: 'Rice & Grain Dishes', collapsed: false, comps: [
-            { id: 'biryani-rice-bowl', name: 'Biryani / Layered Rice Bowl', time: 25, passive: 15, tags: ['Gluten-Free', 'Spicy'], dot: PALETTE.BASE, ingredients: [], notes: 'Spiced rice base format.' },
-            { id: 'risotto-grain-base', name: 'Risotto / Creamy Grain Base', time: 25, passive: 0, tags: ['Gluten-Free', 'Dairy', 'Rich'], dot: PALETTE.BASE, ingredients: [], notes: 'Arborio, polenta, or grits bowl.' },
-            { id: 'donburi-rice-bowl', name: 'Donburi / Seasoned Rice Bowl', time: 10, passive: 0, tags: ['Gluten-Free'], dot: PALETTE.BASE, ingredients: [], notes: 'Sushi rice or jasmine rice format.' }
-          ]
-        },
-        {
-          id: 'f-base-soups-stews', name: 'Soups, Broths & Braises', collapsed: false, comps: [
-            { id: 'stew-curry-vessel', name: 'Stew / Curry Vessel', time: 20, passive: 0, tags: ['Hot', 'Spicy'], dot: PALETTE.BASE, ingredients: [], notes: 'Deep plate or bowl format.' },
-            { id: 'chowder-bisque-vessel', name: 'Chowder / Bisque Vessel', time: 15, passive: 0, tags: ['Dairy', 'Hot', 'Rich'], dot: PALETTE.BASE, ingredients: [], notes: 'Rich soup vessel format.' }
-          ]
-        },
-        { id: 'f-base-misc', name: 'Miscellaneous Bases', collapsed: false, comps: [] }
+        }
       ]
     },
-    ENHANCER: {
+    SAUCES: {
       collapsed: false,
       unfiled: [],
       folders: [
         {
-          id: 'f-enhancer-fruit', name: 'Fruit & Curds', collapsed: false, comps: [
-            { id: 'mango-puree', name: 'Mango Purée', time: 10, passive: 0, tags: ['Vegan', 'Tropical', 'Sweet'], dot: PALETTE.ENHANCER, ingredients: [{ qty: '500', unit: 'g', name: 'Fresh Mango', tags: ['Sweetener', 'Raw', 'Acid'] }], notes: '' },
-            { id: 'lychee-compote', name: 'Lychee Compote', time: 15, passive: 0, tags: ['Vegan', 'Floral', 'Sweet'], dot: PALETTE.BASE, ingredients: [], notes: '' },
+          id: 'f-sauces-savory', name: 'Savory Sauces & Curries', collapsed: false, comps: [
+            { id: 'ragu-bolognese', name: 'Slow-Cooked Ragù Bolognese', time: 30, passive: 180, tags: ['Dairy', 'Rich'], dot: PALETTE.SAUCES, ingredients: [], notes: '' },
+            { id: 'red-curry-base', name: 'Red Curry Base', time: 15, passive: 30, tags: ['Spicy', 'Tropical', 'Rich'], dot: PALETTE.SAUCES, ingredients: [], notes: '' }
+          ]
+        },
+        {
+          id: 'f-sauces-sweet', name: 'Sweet Sauces & Curds', collapsed: false, comps: [
             {
-              id: 'yuzu-curd', name: 'Yuzu Curd', time: 15, passive: 20, tags: ['Eggs', 'Dairy', 'Sour', 'Citric', 'Tangy'], dot: PALETTE.ENHANCER,
+              id: 'yuzu-curd', name: 'Yuzu Curd', time: 15, passive: 20, tags: ['Eggs', 'Dairy', 'Sour', 'Citric', 'Tangy'], dot: PALETTE.SAUCES,
               ingredients: [
-                { qty: '100', unit: 'ml', name: 'Yuzu Juice', tags: ['Acid', 'Aromatic', 'Raw'] },
+                { qty: '100', unit: 'ml', name: 'Yuzu Juice', tags: ['Acid', 'Aromatic'] },
                 { qty: '3', unit: 'pcs', name: 'Eggs', tags: ['Protein', 'Fat', 'Emulsifier'] }
-              ],
-              notes: 'Cook over double boiler until thick.'
+              ], notes: ''
             },
-            { id: 'raspberry-coulis', name: 'Raspberry Coulis', time: 10, passive: 0, tags: ['Vegan', 'Tangy', 'Sweet', 'Sour'], dot: PALETTE.ACCENT, ingredients: [], notes: '' }
+            { id: 'dark-choco-ganache', name: 'Dark Chocolate Ganache', time: 12, passive: 30, tags: ['Dairy', 'Bitter', 'Sweet', 'Silky'], dot: PALETTE.SAUCES, ingredients: [], notes: '' }
           ]
-        },
+        }
+      ]
+    },
+    PRODUCE: {
+      collapsed: false,
+      unfiled: [],
+      folders: [
         {
-          id: 'f-enhancer-sauces', name: 'Sauces, Curries & Braises', collapsed: false, comps: [
+          id: 'f-produce-fresh', name: 'Fresh Toppings & Salsas', collapsed: false, comps: [
             {
-              id: 'dark-choco-ganache', name: 'Dark Chocolate Ganache', time: 12, passive: 30, tags: ['Dairy', 'Bitter', 'Sweet', 'Rich', 'Silky'], dot: PALETTE.DARK,
+              id: 'pico-de-gallo', name: 'Pico de Gallo', time: 10, passive: 0, tags: ['Vegan', 'Tangy', 'Sour'], dot: PALETTE.PRODUCE,
               ingredients: [
-                { qty: '200', unit: 'g', name: '70% Dark Chocolate', tags: ['Fat', 'Sweetener'] },
-                { qty: '200', unit: 'ml', name: 'Cream', tags: ['Dairy', 'Fat', 'Emulsifier'] }
-              ],
-              notes: 'Emulsify gently.'
+                { qty: '2', unit: 'pcs', name: 'Roma Tomatoes', tags: ['Acid', 'Raw'] },
+                { qty: '1/2', unit: 'pc', name: 'Red Onion', tags: ['Allium', 'Raw'] }
+              ], notes: ''
             },
-            { id: 'classic-bechamel', name: 'Classic Béchamel / Mornay', time: 15, passive: 0, tags: ['Dairy', 'Gluten', 'Rich'], dot: PALETTE.ENHANCER, ingredients: [{ qty: '500', unit: 'ml', name: 'Whole milk', tags: ['Dairy', 'Fat'] }, { qty: '50', unit: 'g', name: 'Butter', tags: ['Dairy', 'Fat', 'Emulsifier'] }], notes: 'French Mother Sauce.' },
-            { id: 'ragu-bolognese', name: 'Slow-Cooked Ragù Bolognese', time: 30, passive: 180, tags: ['Dairy', 'Rich', 'Earthy'], dot: PALETTE.ENHANCER, ingredients: [{ qty: '250', unit: 'g', name: 'Ground beef', tags: ['Protein', 'Fat'] }, { qty: '250', unit: 'g', name: 'Ground pork', tags: ['Protein', 'Fat'] }], notes: '' },
-            { id: 'red-curry-base', name: 'Red Curry Base', time: 15, passive: 30, tags: ['Spicy', 'Tropical', 'Rich'], dot: PALETTE.ENHANCER, ingredients: [{ qty: '100', unit: 'g', name: 'Red curry paste', tags: ['Spice', 'Aromatic', 'Allium'] }, { qty: '400', unit: 'ml', name: 'Coconut milk', tags: ['Fat', 'Emulsifier'] }], notes: '' },
-            { id: 'mole-negro', name: 'Mole Negro', time: 45, passive: 120, tags: ['Smoky', 'Bitter', 'Rich', 'Spicy'], dot: PALETTE.ENHANCER, ingredients: [{ qty: '3', unit: 'type', name: 'Chipotle/Ancho/Guajillo', tags: ['Spice', 'Aromatic'] }], notes: 'Complex Mexican reduced sauce.' },
-            { id: 'san-marzano-marinara', name: 'San Marzano Marinara', time: 10, passive: 45, tags: ['Vegan', 'Tangy', 'Sour'], dot: PALETTE.ENHANCER, ingredients: [{ qty: '800', unit: 'g', name: 'San Marzano tomato', tags: ['Acid', 'Aromatic'] }], notes: '' }
+            { id: 'pickled-red-onion', name: 'Pickled Red Onions', time: 10, passive: 60, tags: ['Vegan', 'Tangy', 'Sour'], dot: PALETTE.PRODUCE, ingredients: [{ qty: '1', unit: 'pc', name: 'Red Onion', tags: ['Allium', 'Acid'] }], notes: '' }
           ]
         },
         {
-          id: 'f-enhancer-cheeses', name: 'Cheeses & Purees', collapsed: false, comps: [
-            { id: 'burrata-basil-oil', name: 'Burrata & Basil Oil', time: 5, passive: 0, tags: ['Dairy', 'Vegetarian', 'Silky', 'Rich'], dot: PALETTE.ENHANCER, ingredients: [{ qty: '1', unit: 'ball', name: 'Mozzarella di bufala / Burrata', tags: ['Dairy', 'Fat', 'Protein'] }], notes: '' },
-            { id: 'butternut-squash-puree', name: 'Roasted Butternut Squash Puree', time: 15, passive: 40, tags: ['Vegan', 'Earthy', 'Sweet'], dot: PALETTE.ENHANCER, ingredients: [{ qty: '1', unit: 'pc', name: 'Butternut squash', tags: ['Sweetener', 'Aromatic'] }], notes: '' }
+          id: 'f-produce-infusions', name: 'Infusions & Oils', collapsed: false, comps: [
+            { id: 'smoked-hibiscus-syrup', name: 'Smoked Hibiscus Syrup', time: 20, passive: 30, tags: ['Vegan', 'Floral', 'Smoky', 'Tangy'], dot: PALETTE.PRODUCE, ingredients: [], notes: '' },
+            { id: 'garlic-aioli', name: 'Garlic Aïoli', time: 10, passive: 0, tags: ['Eggs', 'Tangy'], dot: PALETTE.PRODUCE, ingredients: [{ qty: '4', unit: 'cloves', name: 'Garlic', tags: ['Allium', 'Aromatic'] }], notes: '' }
           ]
-        },
-        { id: 'f-enhancer-misc', name: 'Miscellaneous Enhancers', collapsed: false, comps: [] }
+        }
       ]
     },
-    AROMATIC: {
+    FINISHES: {
       collapsed: false,
       unfiled: [],
       folders: [
         {
-          id: 'f-aromatic-floral', name: 'Infusions & Syrups', collapsed: false, comps: [
-            { id: 'jasmine-tea-infusion', name: 'Jasmine Tea Infusion', time: 5, passive: 15, tags: ['Vegan', 'Floral', 'Hot'], dot: PALETTE.AROMATIC, ingredients: [{ qty: '10', unit: 'g', name: 'Jasmine Green Tea', tags: ['Aromatic', 'Herb'] }], notes: '' },
-            { id: 'smoked-hibiscus-syrup', name: 'Smoked Hibiscus Syrup', time: 20, passive: 30, tags: ['Vegan', 'Floral', 'Smoky', 'Tangy', 'Sour'], dot: PALETTE.BASE, ingredients: [{ qty: '50', unit: 'g', name: 'Dried Hibiscus', tags: ['Acid', 'Aromatic'] }, { qty: '200', unit: 'g', name: 'Sugar', tags: ['Sweetener'] }], notes: 'Infuse wood smoke prior to strain.' }
+          id: 'f-finishes-crunch', name: 'Crunch & Nuts', collapsed: false, comps: [
+            { id: 'almond-praline', name: 'Toasted Almond Praline', time: 20, passive: 10, tags: ['Tree Nuts', 'Nutty', 'Crispy'], dot: PALETTE.FINISHES, ingredients: [], notes: '' },
+            { id: 'sesame-furikake', name: 'Toasted Sesame Furikake', time: 5, passive: 0, tags: ['Sesame', 'Crispy'], dot: PALETTE.FINISHES, ingredients: [], notes: '' },
+            { id: 'pancetta-crumbles', name: 'Crispy Pancetta Crumbles', time: 10, passive: 0, tags: ['Crispy', 'Rich'], dot: PALETTE.FINISHES, ingredients: [], notes: '' }
           ]
-        },
-        {
-          id: 'f-aromatic-condiments', name: 'Oils, Emulsions & Condiments', collapsed: false, comps: [
-            { id: 'garlic-aioli-toum', name: 'Garlic Aïoli / Toum', time: 10, passive: 0, tags: ['Eggs', 'Tangy', 'Spicy'], dot: PALETTE.AROMATIC, ingredients: [{ qty: '4', unit: 'cloves', name: 'Garlic', tags: ['Allium', 'Aromatic'] }, { qty: '1', unit: 'pc', name: 'Egg yolk', tags: ['Fat', 'Emulsifier'] }], notes: '' },
-            { id: 'chili-crisp-sesame-oil', name: 'Chili Crisp & Sesame Oil', time: 15, passive: 15, tags: ['Vegan', 'Spicy', 'Smoky', 'Sesame'], dot: PALETTE.AROMATIC, ingredients: [{ qty: '50', unit: 'g', name: 'Gochugaru', tags: ['Spice', 'Aromatic'] }, { qty: '100', unit: 'ml', name: 'Neutral oil', tags: ['Fat'] }], notes: '' },
-            { id: 'chimichurri-salsa', name: 'Chimichurri Salsa', time: 10, passive: 0, tags: ['Vegan', 'Tangy', 'Sour'], dot: PALETTE.AROMATIC, ingredients: [{ qty: '1', unit: 'bunch', name: 'Flat-leaf parsley', tags: ['Herb', 'Aromatic'] }, { qty: '30', unit: 'ml', name: 'Red wine vinegar', tags: ['Acid'] }], notes: '' },
-            { id: 'pesto-genovese', name: 'Pesto Genovese', time: 10, passive: 0, tags: ['Dairy', 'Tree Nuts', 'Vegetarian', 'Earthy'], dot: PALETTE.AROMATIC, ingredients: [{ qty: '2', unit: 'cups', name: 'Italian basil', tags: ['Herb', 'Aromatic'] }, { qty: '50', unit: 'g', name: 'Parmigiano-Reggiano', tags: ['Dairy', 'Fat', 'Protein'] }], notes: '' },
-            { id: 'aged-balsamic-reduction', name: 'Aged Balsamic Reduction', time: 5, passive: 20, tags: ['Vegan', 'Sweet', 'Tangy', 'Sour'], dot: PALETTE.AROMATIC, ingredients: [{ qty: '100', unit: 'ml', name: 'Balsamic vinegar', tags: ['Acid', 'Sweetener'] }], notes: '' }
-          ]
-        },
-        { id: 'f-aromatic-misc', name: 'Miscellaneous Aromatics', collapsed: false, comps: [] }
-      ]
-    },
-    TEXTURE: {
-      collapsed: false,
-      unfiled: [],
-      folders: [
-        {
-          id: 'f-texture-crunch', name: 'Crunch & Nuts', collapsed: false, comps: [
-            { id: 'almond-praline', name: 'Toasted Almond Praline', time: 20, passive: 10, tags: ['Tree Nuts', 'Nutty', 'Sweet', 'Crispy'], dot: PALETTE.ENHANCER, ingredients: [{ qty: '150', unit: 'g', name: 'Almonds', tags: ['Protein', 'Fat'] }, { qty: '100', unit: 'g', name: 'Caramelized Sugar', tags: ['Sweetener'] }], notes: 'Crush finely in food processor.' },
-            { id: 'sesame-furikake', name: 'Toasted Sesame Furikake', time: 5, passive: 0, tags: ['Sesame', 'Crispy', 'Earthy'], dot: PALETTE.TEXTURE, ingredients: [{ qty: '2', unit: 'tbsp', name: 'Toasted sesame seeds', tags: ['Fat', 'Aromatic'] }, { qty: '1', unit: 'sheet', name: 'Nori', tags: ['Aromatic'] }], notes: '' },
-            { id: 'pancetta-crumbles', name: 'Crispy Pancetta Crumbles', time: 10, passive: 0, tags: ['Crispy', 'Rich'], dot: PALETTE.TEXTURE, ingredients: [{ qty: '100', unit: 'g', name: 'Pancetta', tags: ['Protein', 'Fat'] }], notes: 'Render in skillet.' },
-            { id: 'fried-shallot-crisps', name: 'Fried Shallots', time: 8, passive: 0, tags: ['Vegan', 'Crispy', 'Earthy'], dot: PALETTE.TEXTURE, ingredients: [{ qty: '2', unit: 'pcs', name: 'Shallot', tags: ['Allium', 'Aromatic'] }], notes: 'Flash fry in neutral oil.' },
-            { id: 'maldon-sea-salt-microgreens', name: 'Maldon Sea Salt & Microgreens', time: 2, passive: 0, tags: ['Vegan', 'Crispy'], dot: PALETTE.TEXTURE, ingredients: [{ qty: '1', unit: 'pinch', name: 'Maldon sea salt', tags: ['Spice'] }], notes: '' }
-          ]
-        },
-        { id: 'f-texture-misc', name: 'Miscellaneous Textures', collapsed: false, comps: [] }
+        }
       ]
     }
   },
-  assembly: { BASE: [], ENHANCER: [], AROMATIC: [], TEXTURE: [] },
+  archetype: 'CANVAS',
+  assembledComps: [],
   savedRecipes: [],
   nextId: 1000
 };
@@ -240,7 +215,6 @@ export default function App() {
   const [currentTab, setCurrentTab] = useState('builder');
   const [editingFolderId, setEditingFolderId] = useState(null);
   const [dragItem, setDragItem] = useState(null);
-  const [dragOverSlot, setDragOverSlot] = useState(null);
 
   // Modals state
   const [compModalOpen, setCompModalOpen] = useState(false);
@@ -264,37 +238,29 @@ export default function App() {
   // Fast component lookup array
   const allComponents = useMemo(() => {
     const list = [];
-    for (const rId of Object.keys(appState.roles)) {
-      const roleObj = appState.roles[rId];
-      if (roleObj.unfiled) {
-        for (const c of roleObj.unfiled) list.push({ ...c, role: rId, folderId: null });
+    for (const catId of Object.keys(appState.categories)) {
+      const catObj = appState.categories[catId];
+      if (catObj.unfiled) {
+        for (const c of catObj.unfiled) list.push({ ...c, category: catId, folderId: null });
       }
-      for (const f of roleObj.folders) {
-        for (const c of f.comps) list.push({ ...c, role: rId, folderId: f.id });
+      for (const f of catObj.folders) {
+        for (const c of f.comps) list.push({ ...c, category: catId, folderId: f.id });
       }
     }
     return list;
-  }, [appState.roles]);
+  }, [appState.categories]);
 
   const findComp = (id) => allComponents.find(c => c.id === id) || null;
 
   // Assembly calculations
   const assemblyComps = useMemo(() => {
-    return ['BASE', 'ENHANCER', 'AROMATIC', 'TEXTURE']
-      .flatMap(r => (appState.assembly[r] || []).map(findComp))
-      .filter(Boolean);
-  }, [appState.assembly, allComponents]);
+    return (appState.assembledComps || []).map(findComp).filter(Boolean);
+  }, [appState.assembledComps, allComponents]);
 
   const autoTitle = useMemo(() => {
-    const get = r => (appState.assembly[r] || []).map(findComp).filter(Boolean);
-    const b = get('BASE'), e = get('ENHANCER'), a = get('AROMATIC'), t = get('TEXTURE');
-    const parts = [];
-    if (a.length) parts.push(a.map(c => c.name.split(' ')[0]).join('-'));
-    if (e.length) parts.push(e.map(c => c.name).join(' & '));
-    if (b.length) parts.push(b[0].name);
-    if (t.length) parts.push('with ' + t.map(c => c.name).join(' and '));
-    return parts.join(' ');
-  }, [appState.assembly, allComponents]);
+    if (!assemblyComps.length) return '';
+    return assemblyComps.map(c => c.name).join(' with ');
+  }, [assemblyComps]);
 
   const inheritedMeta = useMemo(() => {
     const tags = [...new Set(assemblyComps.flatMap(c => c.tags || []))];
@@ -317,86 +283,74 @@ export default function App() {
     }
   };
 
-  const toggleRole = (roleId) => {
+  const toggleCategory = (catId) => {
     setAppState(prev => ({
       ...prev,
-      roles: {
-        ...prev.roles,
-        [roleId]: { ...prev.roles[roleId], collapsed: !prev.roles[roleId].collapsed }
+      categories: {
+        ...prev.categories,
+        [catId]: { ...prev.categories[catId], collapsed: !prev.categories[catId].collapsed }
       }
     }));
   };
 
   const toggleFolder = (folderId) => {
     setAppState(prev => {
-      const nextRoles = { ...prev.roles };
-
-      for (const rId in nextRoles) {
-        const role = nextRoles[rId];
-        const folderIndex = role.folders.findIndex(f => f.id === folderId);
-
+      const nextCategories = { ...prev.categories };
+      for (const catId in nextCategories) {
+        const category = nextCategories[catId];
+        const folderIndex = category.folders.findIndex(f => f.id === folderId);
         if (folderIndex !== -1) {
-          const updatedFolders = [...role.folders];
+          const updatedFolders = [...category.folders];
           updatedFolders[folderIndex] = {
             ...updatedFolders[folderIndex],
             collapsed: !updatedFolders[folderIndex].collapsed
           };
-
-          return {
-            ...prev,
-            roles: {
-              ...nextRoles,
-              [rId]: {
-                ...role,
-                folders: updatedFolders
-              }
-            }
-          };
+          return { ...prev, categories: { ...nextCategories, [catId]: { ...category, folders: updatedFolders } } };
         }
       }
       return prev;
     });
   };
 
-  const collapseAllRoles = () => {
+  const collapseAllCategories = () => {
     setAppState(prev => {
-      const nextRoles = { ...prev.roles };
-      for (const rId in nextRoles) {
-        nextRoles[rId] = {
-          ...nextRoles[rId],
+      const nextCategories = { ...prev.categories };
+      for (const catId in nextCategories) {
+        nextCategories[catId] = {
+          ...nextCategories[catId],
           collapsed: true,
-          folders: nextRoles[rId].folders.map(f => ({ ...f, collapsed: true }))
+          folders: nextCategories[catId].folders.map(f => ({ ...f, collapsed: true }))
         };
       }
-      return { ...prev, roles: nextRoles };
+      return { ...prev, categories: nextCategories };
     });
   };
 
-  const expandAllRoles = () => {
+  const expandAllCategories = () => {
     setAppState(prev => {
-      const nextRoles = { ...prev.roles };
-      for (const rId in nextRoles) {
-        nextRoles[rId] = {
-          ...nextRoles[rId],
+      const nextCategories = { ...prev.categories };
+      for (const catId in nextCategories) {
+        nextCategories[catId] = {
+          ...nextCategories[catId],
           collapsed: false,
-          folders: nextRoles[rId].folders.map(f => ({ ...f, collapsed: false }))
+          folders: nextCategories[catId].folders.map(f => ({ ...f, collapsed: false }))
         };
       }
-      return { ...prev, roles: nextRoles };
+      return { ...prev, categories: nextCategories };
     });
   };
 
-  const addFolder = (roleId) => {
-    const nextId = 'f-' + roleId.toLowerCase() + '-' + (appState.nextId + 1);
-    const n = appState.roles[roleId].folders.length + 1;
+  const addFolder = (catId) => {
+    const nextId = 'f-' + catId.toLowerCase() + '-' + (appState.nextId + 1);
+    const n = appState.categories[catId].folders.length + 1;
     setAppState(prev => ({
       ...prev,
       nextId: prev.nextId + 1,
-      roles: {
-        ...prev.roles,
-        [roleId]: {
-          ...prev.roles[roleId],
-          folders: [...prev.roles[roleId].folders, { id: nextId, name: 'New folder ' + n, collapsed: false, comps: [] }]
+      categories: {
+        ...prev.categories,
+        [catId]: {
+          ...prev.categories[catId],
+          folders: [...prev.categories[catId].folders, { id: nextId, name: 'New folder ' + n, collapsed: false, comps: [] }]
         }
       }
     }));
@@ -405,97 +359,101 @@ export default function App() {
 
   const renameFolder = (folderId, name) => {
     setAppState(prev => {
-      const nextRoles = { ...prev.roles };
-      for (const rId in nextRoles) {
-        const folder = nextRoles[rId].folders.find(f => f.id === folderId);
+      const nextCategories = { ...prev.categories };
+      for (const catId in nextCategories) {
+        const folder = nextCategories[catId].folders.find(f => f.id === folderId);
         if (folder) {
           folder.name = name || folder.name;
           break;
         }
       }
-      return { ...prev, roles: nextRoles };
+      return { ...prev, categories: nextCategories };
     });
   };
 
   const deleteFolder = (folderId) => {
     setAppState(prev => {
-      const nextRoles = { ...prev.roles };
+      const nextCategories = { ...prev.categories };
       let compIdsToRemove = [];
-      for (const rId in nextRoles) {
-        const folder = nextRoles[rId].folders.find(f => f.id === folderId);
+      for (const catId in nextCategories) {
+        const folder = nextCategories[catId].folders.find(f => f.id === folderId);
         if (folder) {
           compIdsToRemove = folder.comps.map(c => c.id);
-          nextRoles[rId].folders = nextRoles[rId].folders.filter(f => f.id !== folderId);
+          nextCategories[catId].folders = nextCategories[catId].folders.filter(f => f.id !== folderId);
           break;
         }
       }
-      const nextAssembly = { ...prev.assembly };
-      for (const r in nextAssembly) {
-        nextAssembly[r] = nextAssembly[r].filter(id => !compIdsToRemove.includes(id));
-      }
-      return { ...prev, roles: nextRoles, assembly: nextAssembly };
+      return {
+        ...prev,
+        categories: nextCategories,
+        assembledComps: (prev.assembledComps || []).filter(id => !compIdsToRemove.includes(id))
+      };
     });
   };
 
   const removeComp = (cid) => {
     setAppState(prev => {
-      const nextRoles = { ...prev.roles };
-      for (const rId in nextRoles) {
-        nextRoles[rId].unfiled = (nextRoles[rId].unfiled || []).filter(c => c.id !== cid);
-        nextRoles[rId].folders.forEach(f => {
+      const nextCategories = { ...prev.categories };
+      for (const catId in nextCategories) {
+        nextCategories[catId].unfiled = (nextCategories[catId].unfiled || []).filter(c => c.id !== cid);
+        nextCategories[catId].folders.forEach(f => {
           f.comps = f.comps.filter(c => c.id !== cid);
         });
       }
-      const nextAssembly = { ...prev.assembly };
-      for (const r in nextAssembly) {
-        nextAssembly[r] = nextAssembly[r].filter(id => id !== cid);
-      }
-      return { ...prev, roles: nextRoles, assembly: nextAssembly };
+      return {
+        ...prev,
+        categories: nextCategories,
+        assembledComps: (prev.assembledComps || []).filter(id => id !== cid)
+      };
     });
   };
 
-  const addToSlot = (cid, role) => {
+  const addToAssembly = (cid) => {
     setAppState(prev => {
-      const currentList = prev.assembly[role] || [];
-      if (currentList.includes(cid)) return prev;
-      const updated = [...currentList];
-      if (updated.length >= SLOT_MAXES[role]) updated.shift();
+      const current = prev.assembledComps || [];
+      if (current.includes(cid)) return prev;
+      const maxSlots = ARCHETYPES[prev.archetype]?.maxSlots || 6;
+      const updated = [...current];
+      if (updated.length >= maxSlots) updated.shift();
       updated.push(cid);
-      return { ...prev, assembly: { ...prev.assembly, [role]: updated } };
+      return { ...prev, assembledComps: updated };
     });
   };
 
-  const removeFromSlot = (role, cid) => {
+  const removeFromAssembly = (cid) => {
     setAppState(prev => ({
       ...prev,
-      assembly: { ...prev.assembly, [role]: (prev.assembly[role] || []).filter(id => id !== cid) }
+      assembledComps: (prev.assembledComps || []).filter(id => id !== cid)
     }));
   };
 
+  const changeArchetype = (archKey) => {
+    setAppState(prev => ({ ...prev, archetype: archKey }));
+  };
+
   const onSaveRecipe = () => {
-    const compRefs = assemblyComps.map(c => ({ id: c.id, role: c.role }));
     const newRecipe = {
       id: 'recipe-' + autoTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
       title: autoTitle,
       tags: [...new Set(assemblyComps.flatMap(c => c.tags || []))],
-      cat: 'DESSERT',
+      cat: appState.archetype,
       bcg: 'STAR',
-      chefNotes: 'Created via Dish Builder.',
-      components: compRefs
+      chefNotes: 'Created via Archetype Canvas Builder.',
+      components: appState.assembledComps
     };
 
     setAppState(prev => ({
       ...prev,
       nextId: prev.nextId + 1,
-      assembly: { BASE: [], ENHANCER: [], AROMATIC: [], TEXTURE: [] },
+      assembledComps: [],
       savedRecipes: [...prev.savedRecipes, newRecipe]
     }));
     setCurrentTab('recipes');
   };
 
-  const openComponentModal = (compId = null, defaultRole = 'BASE', defaultFolderId = null) => {
+  const openComponentModal = (compId = null, defaultCategory = 'GRAINS', defaultFolderId = null) => {
     const comp = compId ? findComp(compId) : {
-      id: '', name: '', time: 0, passive: 0, tags: [], ingredients: [{ qty: '', unit: '', name: '', tags: [] }], notes: '', role: defaultRole, folderId: defaultFolderId
+      id: '', name: '', time: 0, passive: 0, tags: [], ingredients: [{ qty: '', unit: '', name: '', tags: [] }], notes: '', category: defaultCategory, folderId: defaultFolderId
     };
     setModalCompData({ ...comp, isEdit: !!compId });
     setCompModalOpen(true);
@@ -514,10 +472,10 @@ export default function App() {
         ? generateShorthandId(compFormData.id)
         : (generateShorthandId(compFormData.name) || ('comp-' + (++nextId)));
 
-      const nextRoles = { ...prev.roles };
-      for (const rId in nextRoles) {
-        nextRoles[rId].unfiled = (nextRoles[rId].unfiled || []).filter(c => c.id !== newId);
-        nextRoles[rId].folders.forEach(f => {
+      const nextCategories = { ...prev.categories };
+      for (const catId in nextCategories) {
+        nextCategories[catId].unfiled = (nextCategories[catId].unfiled || []).filter(c => c.id !== newId);
+        nextCategories[catId].folders.forEach(f => {
           f.comps = f.comps.filter(c => c.id !== newId);
         });
       }
@@ -528,25 +486,25 @@ export default function App() {
         time: parseInt(compFormData.time, 10) || 0,
         passive: parseInt(compFormData.passive, 10) || 0,
         tags: compFormData.tags,
-        dot: ROLE_DOTS[compFormData.role] || PALETTE.MUTED,
+        dot: CATEGORIES.find(c => c.id === compFormData.category)?.color || PALETTE.MUTED,
         ingredients: compFormData.ingredients.filter(i => i.name.trim()),
         notes: compFormData.notes.trim()
       };
 
       if (compFormData.folderId) {
-        for (const rId in nextRoles) {
-          const folder = nextRoles[rId].folders.find(f => f.id === compFormData.folderId);
+        for (const catId in nextCategories) {
+          const folder = nextCategories[catId].folders.find(f => f.id === compFormData.folderId);
           if (folder) {
             folder.comps.push(compData);
             break;
           }
         }
       } else {
-        if (!nextRoles[compFormData.role].unfiled) nextRoles[compFormData.role].unfiled = [];
-        nextRoles[compFormData.role].unfiled.push(compData);
+        if (!nextCategories[compFormData.category].unfiled) nextCategories[compFormData.category].unfiled = [];
+        nextCategories[compFormData.category].unfiled.push(compData);
       }
 
-      return { ...prev, nextId, roles: nextRoles };
+      return { ...prev, nextId, categories: nextCategories };
     });
 
     setCompModalOpen(false);
@@ -558,13 +516,15 @@ export default function App() {
   };
 
   const filteredRegistryComps = useMemo(() => {
-    let comps = registryFilter ? allComponents.filter(c => c.role === registryFilter) : allComponents;
+    let comps = registryFilter ? allComponents.filter(c => c.category === registryFilter) : allComponents;
     if (registrySearch.trim()) {
       const q = registrySearch.toLowerCase().trim();
       comps = comps.filter(c => c.name.toLowerCase().includes(q) || (c.tags || []).some(t => t.toLowerCase().includes(q)));
     }
     return comps;
   }, [allComponents, registryFilter, registrySearch]);
+
+  const activeMaxSlots = ARCHETYPES[appState.archetype]?.maxSlots || 6;
 
   return (
     <div className="app-shell">
@@ -594,24 +554,13 @@ export default function App() {
           <div className="tab-content">
             <div className="cols">
               <aside className="sidebar">
-
                 <div className="sb-header">
-                  <span className="sb-title">Components</span>
+                  <span className="sb-title">Domain Library</span>
                   <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-                    <button
-                      className="fa-btn"
-                      title="Collapse All"
-                      onClick={collapseAllRoles}
-                      style={{ padding: '4px 6px', fontSize: '12px' }}
-                    >
+                    <button className="fa-btn" title="Collapse All" onClick={collapseAllCategories} style={{ padding: '4px 6px', fontSize: '12px' }}>
                       <i className="ti ti-fold-up"></i>
                     </button>
-                    <button
-                      className="fa-btn"
-                      title="Expand All"
-                      onClick={expandAllRoles}
-                      style={{ padding: '4px 6px', fontSize: '12px' }}
-                    >
+                    <button className="fa-btn" title="Expand All" onClick={expandAllCategories} style={{ padding: '4px 6px', fontSize: '12px' }}>
                       <i className="ti ti-fold-down"></i>
                     </button>
                     <button className="sb-create-btn" onClick={() => openComponentModal()}>
@@ -620,28 +569,28 @@ export default function App() {
                   </div>
                 </div>
                 <div>
-                  {ROLES.map(role => {
-                    const rs = appState.roles[role.id] || { collapsed: false, unfiled: [], folders: [] };
-                    const unfiledCount = (rs.unfiled || []).length;
-                    const total = rs.folders.reduce((s, f) => s + f.comps.length, 0) + unfiledCount;
+                  {CATEGORIES.map(cat => {
+                    const cs = appState.categories[cat.id] || { collapsed: false, unfiled: [], folders: [] };
+                    const unfiledCount = (cs.unfiled || []).length;
+                    const total = cs.folders.reduce((s, f) => s + f.comps.length, 0) + unfiledCount;
                     return (
-                      <div key={role.id} className="role-section">
-                        <div className="role-header" onClick={(e) => { if (!e.target.closest('.role-add')) toggleRole(role.id); }}>
-                          <i className={`ti ti-chevron-right role-chevron ${rs.collapsed ? '' : 'open'}`}></i>
-                          <div className="role-dot" style={{ background: role.color }}></div>
-                          <span className="role-name">{role.label}</span>
+                      <div key={cat.id} className="role-section">
+                        <div className="role-header" onClick={(e) => { if (!e.target.closest('.role-add')) toggleCategory(cat.id); }}>
+                          <i className={`ti ti-chevron-right role-chevron ${cs.collapsed ? '' : 'open'}`}></i>
+                          <div className="role-dot" style={{ background: cat.color }}></div>
+                          <span className="role-name">{cat.label}</span>
                           <span className="role-count">{total}</span>
-                          <button className="role-add" title="Add folder" onClick={(e) => { e.stopPropagation(); addFolder(role.id); }}>
+                          <button className="role-add" title="Add folder" onClick={(e) => { e.stopPropagation(); addFolder(cat.id); }}>
                             <i className="ti ti-folder-plus"></i>
                           </button>
                         </div>
-                        {!rs.collapsed && (
+                        {!cs.collapsed && (
                           <div className="role-body">
-                            {rs.folders.map(f => (
+                            {cs.folders.map(f => (
                               <FolderItem
                                 key={f.id}
                                 folder={f}
-                                roleId={role.id}
+                                categoryId={cat.id}
                                 editingFolderId={editingFolderId}
                                 setEditingFolderId={setEditingFolderId}
                                 toggleFolder={toggleFolder}
@@ -649,18 +598,18 @@ export default function App() {
                                 deleteFolder={deleteFolder}
                                 openComponentModal={openComponentModal}
                                 removeComp={removeComp}
-                                addToSlot={addToSlot}
+                                addToAssembly={addToAssembly}
                                 setDragItem={setDragItem}
                               />
                             ))}
                             {unfiledCount > 0 && (
                               <FolderItem
                                 isUnfiled
-                                folder={{ id: null, name: 'Unfiled', collapsed: false, comps: rs.unfiled }}
-                                roleId={role.id}
+                                folder={{ id: null, name: 'Unfiled', collapsed: false, comps: cs.unfiled }}
+                                categoryId={cat.id}
                                 openComponentModal={openComponentModal}
                                 removeComp={removeComp}
-                                addToSlot={addToSlot}
+                                addToAssembly={addToAssembly}
                                 setDragItem={setDragItem}
                               />
                             )}
@@ -673,10 +622,29 @@ export default function App() {
               </aside>
 
               <section className="builder">
+                {/* Archetype Selector Banner */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--s0)', padding: '10px 16px', borderRadius: '8px', border: '1px solid var(--bd)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <i className="ti ti-layout-grid" style={{ color: PALETTE.SAUCES }}></i>
+                    <span style={{ fontSize: '13px', fontWeight: '600', color: PALETTE.DARK }}>Assembly Archetype:</span>
+                  </div>
+                  <div style={{ display: 'flex', gap: '6px' }}>
+                    {Object.keys(ARCHETYPES).map(key => (
+                      <button
+                        key={key}
+                        className={`filter-pill ${appState.archetype === key ? 'on' : ''}`}
+                        onClick={() => changeArchetype(key)}
+                      >
+                        {ARCHETYPES[key].label.split(' ')[0]}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
                 <div className="title-preview">
-                  <div className="title-eyebrow">Auto-generated title</div>
+                  <div className="title-eyebrow">Auto-generated dish assembly</div>
                   <div className={`title-text ${assemblyComps.length === 0 ? 'empty' : ''}`}>
-                    {assemblyComps.length > 0 ? autoTitle : 'Start adding components below'}
+                    {assemblyComps.length > 0 ? autoTitle : 'Drag or click components to build dish'}
                   </div>
                   <div className="meta-row">
                     {inheritedMeta.totalTime > 0 && (
@@ -694,68 +662,37 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Slots Grid */}
-                <div className="slot-row grid-4-col">
-                  <div>
-                    <div className="slot-label">Base vehicle <span className="slot-hint">(1 max)</span></div>
-                    <SlotBox
-                      role="BASE"
-                      assemblyIds={appState.assembly.BASE || []}
-                      findComp={findComp}
-                      removeFromSlot={removeFromSlot}
-                      addToSlot={addToSlot}
-                      dragItem={dragItem}
-                      dragOverSlot={dragOverSlot}
-                      setDragOverSlot={setDragOverSlot}
-                      placeholder="Drop base component"
-                    />
+                {/* Open Canvas Dynamic Slots */}
+                <div>
+                  <div className="slot-label">
+                    Assembled Components <span className="slot-hint">({assemblyComps.length} / {activeMaxSlots} max slots)</span>
                   </div>
-                  <div>
-                    <div className="slot-label">Flavor enhancers & sauces <span className="slot-hint">(up to 3)</span></div>
-                    <SlotBox
-                      role="ENHANCER"
-                      assemblyIds={appState.assembly.ENHANCER || []}
-                      findComp={findComp}
-                      removeFromSlot={removeFromSlot}
-                      addToSlot={addToSlot}
-                      dragItem={dragItem}
-                      dragOverSlot={dragOverSlot}
-                      setDragOverSlot={setDragOverSlot}
-                      placeholder="Drop enhancers or sauces"
-                    />
-                  </div>
-                  <div>
-                    <div className="slot-label">Aromatics & accents <span className="slot-hint">(up to 3)</span></div>
-                    <SlotBox
-                      role="AROMATIC"
-                      assemblyIds={appState.assembly.AROMATIC || []}
-                      findComp={findComp}
-                      removeFromSlot={removeFromSlot}
-                      addToSlot={addToSlot}
-                      dragItem={dragItem}
-                      dragOverSlot={dragOverSlot}
-                      setDragOverSlot={setDragOverSlot}
-                      placeholder="Drop aromatics or accents"
-                    />
-                  </div>
-                  <div>
-                    <div className="slot-label">Textures & finishes <span className="slot-hint">(up to 3)</span></div>
-                    <SlotBox
-                      role="TEXTURE"
-                      assemblyIds={appState.assembly.TEXTURE || []}
-                      findComp={findComp}
-                      removeFromSlot={removeFromSlot}
-                      addToSlot={addToSlot}
-                      dragItem={dragItem}
-                      dragOverSlot={dragOverSlot}
-                      setDragOverSlot={setDragOverSlot}
-                      placeholder="Drop texture elements"
-                    />
+                  <div
+                    className="slot"
+                    style={{ minHeight: '120px', display: 'flex', flexWrap: 'wrap', gap: '8px', padding: '12px', alignItems: 'flex-start' }}
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      if (dragItem) addToAssembly(dragItem.id);
+                    }}
+                  >
+                    {assemblyComps.map(c => (
+                      <div key={c.id} className="slot-tag" style={{ padding: '6px 10px' }}>
+                        <div style={{ width: 8, height: 8, borderRadius: '50%', background: c.dot || PALETTE.MUTED, flexShrink: 0 }}></div>
+                        <span style={{ fontSize: '12px', fontWeight: '500' }}>{c.name}</span>
+                        <button className="rm" title="Remove" onClick={() => removeFromAssembly(c.id)}>×</button>
+                      </div>
+                    ))}
+                    {assemblyComps.length === 0 && (
+                      <div className="slot-empty" style={{ width: '100%', textAlign: 'center', padding: '24px 0' }}>
+                        <i className="ti ti-drag-drop" aria-hidden="true"></i> Drag components or click from library to add to dish
+                      </div>
+                    )}
                   </div>
                 </div>
 
                 <div>
-                  <div className="slot-label">Inherited Component Tags</div>
+                  <div className="slot-label">Inherited Dish Tags</div>
                   <div className="tag-grid">
                     {inheritedMeta.tags.length > 0 ? (
                       inheritedMeta.tags.map(t => (
@@ -800,11 +737,11 @@ export default function App() {
 
             <div className="filter-container">
               <div className="filter-bar">
-                <span className="filter-label">Role:</span>
+                <span className="filter-label">Domain:</span>
                 <button className={`filter-pill ${registryFilter === null ? 'on' : ''}`} onClick={() => setRegistryFilter(null)}>All</button>
-                {ROLES.map(r => (
-                  <button key={r.id} className={`filter-pill ${registryFilter === r.id ? 'on' : ''}`} onClick={() => setRegistryFilter(r.id)}>
-                    {r.label}
+                {CATEGORIES.map(c => (
+                  <button key={c.id} className={`filter-pill ${registryFilter === c.id ? 'on' : ''}`} onClick={() => setRegistryFilter(c.id)}>
+                    {c.label}
                   </button>
                 ))}
               </div>
@@ -824,7 +761,7 @@ export default function App() {
               {filteredRegistryComps.map(c => (
                 <div key={c.id} className="recipe-card" onClick={() => openComponentModal(c.id)}>
                   <div>
-                    <div className="rc-cat">{c.role} <span style={{ fontSize: '9px', opacity: 0.6 }}>({c.id})</span></div>
+                    <div className="rc-cat">{c.category} <span style={{ fontSize: '9px', opacity: 0.6 }}>({c.id})</span></div>
                     <div className="rc-title">{c.name}</div>
                     <div style={{ fontSize: '11px', color: PALETTE.MUTED, margin: '4px 0 8px', display: 'flex', alignItems: 'center', gap: '4px' }}>
                       <i className="ti ti-clock"></i>{c.time}m active{c.passive ? ` + ${c.passive}m passive` : ''}
@@ -837,7 +774,7 @@ export default function App() {
                   </div>
                 </div>
               ))}
-              <div className="reg-add-card" onClick={() => openComponentModal(null, registryFilter || 'BASE')}>
+              <div className="reg-add-card" onClick={() => openComponentModal(null, registryFilter || 'GRAINS')}>
                 <div className="reg-add-btn"><i className="ti ti-plus"></i></div>
                 <div className="reg-add-text">Add Component</div>
               </div>
@@ -880,7 +817,7 @@ export default function App() {
       {compModalOpen && (
         <ComponentEditorModal
           data={modalCompData}
-          roles={appState.roles}
+          categories={appState.categories}
           onClose={() => setCompModalOpen(false)}
           onSave={saveComponentModal}
         />
@@ -902,7 +839,7 @@ export default function App() {
 
 function FolderItem({
   folder,
-  roleId,
+  categoryId,
   isUnfiled = false,
   editingFolderId,
   setEditingFolderId,
@@ -911,7 +848,7 @@ function FolderItem({
   deleteFolder,
   openComponentModal,
   removeComp,
-  addToSlot,
+  addToAssembly,
   setDragItem
 }) {
   const [folderNameVal, setFolderNameVal] = useState(folder.name);
@@ -956,7 +893,7 @@ function FolderItem({
           <button
             className="fa-btn add"
             title="Add component"
-            onClick={(e) => { e.stopPropagation(); openComponentModal(null, roleId, folder.id); }}
+            onClick={(e) => { e.stopPropagation(); openComponentModal(null, categoryId, folder.id); }}
           >
             <i className="ti ti-plus"></i>
           </button>
@@ -991,13 +928,13 @@ function FolderItem({
               key={comp.id}
               className="comp-item"
               draggable
-              onDragStart={() => setDragItem({ id: comp.id, role: roleId })}
+              onDragStart={() => setDragItem({ id: comp.id, category: categoryId })}
               onClick={(e) => {
                 if (e.target.closest('.comp-actions')) return;
-                addToSlot(comp.id, roleId);
+                addToAssembly(comp.id);
               }}
             >
-              <div className="comp-dot" style={{ background: comp.dot || ROLE_DOTS[roleId] }}></div>
+              <div className="comp-dot" style={{ background: comp.dot || CATEGORIES.find(c => c.id === categoryId)?.color }}></div>
               <span className="comp-name" title={comp.name}>{comp.name}</span>
               <div className="comp-actions">
                 <button className="comp-btn" title="Edit Component" onClick={(e) => { e.stopPropagation(); openComponentModal(comp.id); }}>
@@ -1015,47 +952,11 @@ function FolderItem({
   );
 }
 
-function SlotBox({ role, assemblyIds, findComp, removeFromSlot, addToSlot, dragItem, dragOverSlot, setDragOverSlot, placeholder }) {
-  const isOver = dragOverSlot === role;
-
-  return (
-    <div
-      className={`slot ${isOver ? 'dragover' : ''}`}
-      onDragOver={(e) => { e.preventDefault(); setDragOverSlot(role); }}
-      onDragLeave={() => setDragOverSlot(null)}
-      onDrop={(e) => {
-        e.preventDefault();
-        setDragOverSlot(null);
-        if (dragItem) {
-          addToSlot(dragItem.id, dragItem.role || role);
-        }
-      }}
-    >
-      {assemblyIds.map(cid => {
-        const c = findComp(cid);
-        if (!c) return null;
-        return (
-          <div key={cid} className="slot-tag">
-            <div style={{ width: 6, height: 6, borderRadius: '50%', background: c.dot || ROLE_DOTS[role], flexShrink: 0 }}></div>
-            <span>{c.name}</span>
-            <button className="rm" title="Remove" onClick={() => removeFromSlot(role, cid)}>×</button>
-          </div>
-        );
-      })}
-      {assemblyIds.length === 0 && (
-        <div className="slot-empty">
-          <i className="ti ti-drag-drop" aria-hidden="true"></i> {placeholder}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function ComponentEditorModal({ data, roles, onClose, onSave }) {
+function ComponentEditorModal({ data, categories, onClose, onSave }) {
   const [formData, setFormData] = useState({
     id: data?.id || '',
     name: data?.name || '',
-    role: data?.role || 'BASE',
+    category: data?.category || 'GRAINS',
     folderId: data?.folderId || '',
     time: data?.time || 0,
     passive: data?.passive || 0,
@@ -1069,8 +970,8 @@ function ComponentEditorModal({ data, roles, onClose, onSave }) {
   const [ingTagVal, setIngTagVal] = useState('');
 
   const availableFolders = useMemo(() => {
-    return roles[formData.role]?.folders || [];
-  }, [roles, formData.role]);
+    return categories[formData.category]?.folders || [];
+  }, [categories, formData.category]);
 
   const handleIngChange = (index, field, val) => {
     const updated = [...formData.ingredients];
@@ -1144,16 +1045,15 @@ function ComponentEditorModal({ data, roles, onClose, onSave }) {
           </div>
           <div className="form-row">
             <div className="form-group">
-              <label className="form-label">Role</label>
+              <label className="form-label">Domain Category</label>
               <select
                 className="form-select"
-                value={formData.role}
-                onChange={e => setFormData({ ...formData, role: e.target.value, folderId: '' })}
+                value={formData.category}
+                onChange={e => setFormData({ ...formData, category: e.target.value, folderId: '' })}
               >
-                <option value="BASE">Base vehicles</option>
-                <option value="ENHANCER">Flavor enhancers & sauces</option>
-                <option value="AROMATIC">Aromatics & accents</option>
-                <option value="TEXTURE">Textures & finishes</option>
+                {CATEGORIES.map(c => (
+                  <option key={c.id} value={c.id}>{c.label}</option>
+                ))}
               </select>
             </div>
             <div className="form-group">
@@ -1194,7 +1094,7 @@ function ComponentEditorModal({ data, roles, onClose, onSave }) {
           </div>
 
           <div className="form-group">
-            <label className="form-label">Ingredients & Functional Ingredient Tags</label>
+            <label className="form-label">Ingredients & Functional Tags</label>
             <table className="ing-table">
               <thead>
                 <tr>
@@ -1325,7 +1225,10 @@ function ComponentEditorModal({ data, roles, onClose, onSave }) {
 
 function DishDetailModal({ recipe, findComp, onClose }) {
   const resolvedComps = useMemo(() => {
-    return (recipe.components || []).map(rc => findComp(rc.id)).filter(Boolean);
+    const compList = typeof recipe.components[0] === 'string'
+      ? recipe.components.map(id => findComp(id))
+      : recipe.components.map(rc => findComp(rc.id));
+    return compList.filter(Boolean);
   }, [recipe, findComp]);
 
   const totalActive = resolvedComps.reduce((s, c) => s + (c.time || 0), 0);
@@ -1349,45 +1252,36 @@ function DishDetailModal({ recipe, findComp, onClose }) {
           </div>
 
           <div className="dish-sec">
-            <div className="dish-sec-title">Component Breakdown</div>
-            {ROLES.map(r => {
-              const roleComps = resolvedComps.filter(c => c.role === r.id);
-              if (!roleComps.length) return null;
-              return (
-                <div key={r.id} className="dish-sec">
-                  <div className="dish-sec-title">{r.label}</div>
-                  {roleComps.map(c => (
-                    <div key={c.id} className="dish-comp-card">
-                      <div className="dish-comp-head">
-                        <span>{c.name} <span style={{ fontSize: '10px', color: PALETTE.MUTED }}>({c.id})</span></span>
-                        <span style={{ color: PALETTE.MUTED, fontSize: '11px' }}>{c.time}m active</span>
-                      </div>
-                      {c.ingredients?.length > 0 && (
-                        <ul className="dish-comp-ings">
-                          {c.ingredients.map((ing, i) => (
-                            <li key={i}>
-                              {ing.qty} {ing.unit} {ing.name}
-                              {ing.tags?.length > 0 && (
-                                <span style={{ marginLeft: '6px' }}>
-                                  {ing.tags.map(t => (
-                                    <span key={t} className="ing-tag-pill" style={{ fontSize: '8px', padding: '1px 3px', marginRight: '2px' }}>#{t}</span>
-                                  ))}
-                                </span>
-                              )}
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                      {c.notes && (
-                        <div style={{ fontSize: '11px', color: PALETTE.MUTED, marginTop: '4px', fontStyle: 'italic' }}>
-                          Note: {c.notes}
-                        </div>
-                      )}
-                    </div>
-                  ))}
+            <div className="dish-sec-title">Component Breakdown ({resolvedComps.length} Elements)</div>
+            {resolvedComps.map(c => (
+              <div key={c.id} className="dish-comp-card" style={{ marginBottom: '8px' }}>
+                <div className="dish-comp-head">
+                  <span>{c.name} <span style={{ fontSize: '10px', color: PALETTE.MUTED }}>({c.id})</span></span>
+                  <span style={{ color: PALETTE.MUTED, fontSize: '11px' }}>{c.time}m active</span>
                 </div>
-              );
-            })}
+                {c.ingredients?.length > 0 && (
+                  <ul className="dish-comp-ings">
+                    {c.ingredients.map((ing, i) => (
+                      <li key={i}>
+                        {ing.qty} {ing.unit} {ing.name}
+                        {ing.tags?.length > 0 && (
+                          <span style={{ marginLeft: '6px' }}>
+                            {ing.tags.map(t => (
+                              <span key={t} className="ing-tag-pill" style={{ fontSize: '8px', padding: '1px 3px', marginRight: '2px' }}>#{t}</span>
+                            ))}
+                          </span>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {c.notes && (
+                  <div style={{ fontSize: '11px', color: PALETTE.MUTED, marginTop: '4px', fontStyle: 'italic' }}>
+                    Note: {c.notes}
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
 
           <div className="dish-sec">
