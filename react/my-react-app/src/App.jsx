@@ -353,6 +353,81 @@ export default function App() {
     };
   }, [assemblyComps]);
 
+  // ── CSV EXPORT FUNCTIONALITY ────────────────────────────────────────────────
+  const exportDishIngredientsCSV = () => {
+    const allRecipes = [...SEED_RECIPES, ...appState.savedRecipes];
+    if (!allRecipes.length) {
+      alert("No saved recipes found to export.");
+      return;
+    }
+
+    const inventoryMap = {};
+
+    allRecipes.forEach(recipe => {
+      // Resolve component objects for each dish
+      const compIds = typeof recipe.components[0] === 'string'
+        ? recipe.components
+        : recipe.components.map(c => c.id);
+
+      const resolved = compIds.map(findComp).filter(Boolean);
+
+      // Track unique ingredients per dish to accurately increment frequency
+      const seenIngredientsInDish = new Set();
+
+      resolved.forEach(comp => {
+        (comp.ingredients || []).forEach(ing => {
+          if (!ing.name || !ing.name.trim()) return;
+
+          const rawName = ing.name.trim();
+          const key = rawName.toLowerCase();
+          const unit = (ing.unit || '').trim();
+          const qtyVal = parseFloat(ing.qty) || 0;
+
+          if (!inventoryMap[key]) {
+            inventoryMap[key] = {
+              name: rawName,
+              frequency: 0,
+              totalQty: 0,
+              unit: unit
+            };
+          }
+
+          if (!seenIngredientsInDish.has(key)) {
+            seenIngredientsInDish.add(key);
+            inventoryMap[key].frequency += 1;
+          }
+
+          inventoryMap[key].totalQty += qtyVal;
+        });
+      });
+    });
+
+    // Format as CSV
+    const rows = [
+      ['Ingredient', 'Frequency (Dish Count)', 'Total Quantity', 'Unit']
+    ];
+
+    Object.values(inventoryMap)
+      .sort((a, b) => b.frequency - a.frequency) // Sort highest frequency first
+      .forEach(item => {
+        rows.push([
+          `"${item.name.replace(/"/g, '""')}"`,
+          item.frequency,
+          item.totalQty > 0 ? item.totalQty : '',
+          `"${item.unit.replace(/"/g, '""')}"`
+        ]);
+      });
+
+    const csvContent = "data:text/csv;charset=utf-8," + rows.map(e => e.join(",")).join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `recipe_ingredient_inventory_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   // Actions
   const resetToDefaults = () => {
     if (window.confirm("Reset all custom components and recipes back to initial defaults?")) {
@@ -868,7 +943,12 @@ export default function App() {
         {/* RECIPES TAB */}
         {currentTab === 'recipes' && (
           <div className="tab-content">
-            <div className="tab-header"><h1 className="tab-title">Recipe library</h1></div>
+            <div className="tab-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h1 className="tab-title">Recipe library</h1>
+              <button className="save-btn" style={{ padding: '6px 14px', fontSize: '12px' }} onClick={exportDishIngredientsCSV}>
+                <i className="ti ti-file-export" style={{ marginRight: '6px' }}></i> Export Inventory CSV
+              </button>
+            </div>
             {appState.savedRecipes.length + SEED_RECIPES.length === 0 ? (
               <div className="empty-state">
                 <i className="ti ti-book-off" aria-hidden="true"></i>
