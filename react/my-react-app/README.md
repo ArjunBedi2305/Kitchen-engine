@@ -1,16 +1,6 @@
-# React + Vite
+Motivation: 
+Oftentimes when cooking, we become uninspired, limited not by ingredients or skills, but by inspiration. This app aims to modularize cooking and allow the development of new recipes by taking what you already know, and allowing you to renew it. 
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
 
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+Project description: 
+The Kitchen Engine is a modular, single-page React web application for component driven recipe development and flavor aggregation. Instead of relying on static ingredient lists, it lets you assemble dishes by snapping proteins, bases, aromatics, and sauces into structured dish formats (such as tacos, bowls, wraps, and pastries) from a 300+ item food compendium. As you build, the engine dynamically generates dish titles, aggregates flavor profiles and dual-layer ingredient tags, and computes real-time allergen unions and dietary intersections across every active component. Add the dishes and skills you know into your own data base and save it for a new creation.
